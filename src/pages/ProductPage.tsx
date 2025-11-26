@@ -59,6 +59,7 @@ import { useCart } from "../hooks/useCart";
 import ProductMediaGallery from "../components/ProductMediaGallery";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import ProductCard from "../components/ProductCard";
+import { Helmet } from 'react-helmet-async';
 
 interface ShippingOption {
   id: string;
@@ -199,6 +200,32 @@ const ProductPage: React.FC = () => {
   
     return (
       <>
+        <Helmet>
+          <title>{product.name} | Denim Rosario</title>
+          <meta name="description" content={`Comprá ${product.name} en Denim Rosario. ${product.description.substring(0, 150)}...`} />
+          <meta name="keywords" content={`jeans ${product.name}, denim, ropa mujer, pantalones tiro alto, ${product.category}`} />
+          {/* Schema.org JSON-LD */}
+          <script type="application/ld+json">{`
+            {
+              "@context": "https://schema.org/",
+              "@type": "Product",
+              "name": "${product.name}",
+              "image": "${product.images[0]}",
+              "description": "${product.description}",
+              "brand": {
+                "@type": "Brand",
+                "name": "Denim Rosario"
+              },
+              "offers": {
+                "@type": "Offer",
+                "url": "${import.meta.env.VITE_APP_BASE_URL}/producto/${product.id}",
+                "priceCurrency": "ARS",
+                "price": "${product.price}",
+                "availability": "${product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock'}"
+              }
+            }
+          `}</script>
+        </Helmet>
         <div className="bg-blanco-hueso text-gris-oscuro">
           <div className="max-w-7xl mx-auto px-4 lg:px-8 py-0">
             <div className="flex flex-col lg:flex-row lg:gap-16">

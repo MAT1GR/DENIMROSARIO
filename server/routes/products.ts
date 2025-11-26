@@ -16,16 +16,25 @@ import {
 
 const router = Router();
 
-// --- NUEVO: CONFIGURACIÓN DE MULTER PARA GUARDAR ARCHIVOS ---
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// --- CONFIGURACIÓN DE MULTER CORREGIDA ---
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    const uploadPath = '/home/denimros/public_html/uploads';
-    // Asegurarse de que el directorio de subida exista
-    fs.mkdirSync(uploadPath, { recursive: true });
+    // ESTRATEGIA: Salir de la carpeta del backend y entrar a public_html
+    // process.cwd() es la carpeta 'backendnuevo'.
+    // '..' nos lleva atrás a '/home/denimros/'.
+    // Luego entramos a 'public_html/uploads'.
+    const uploadPath = path.join(process.cwd(), '../public_html/uploads');
+    
+    // Si prefieres la ruta absoluta directa, sería: 
+    // const uploadPath = '/home/denimros/public_html/uploads';
+    
+    // Verificamos y creamos el directorio si no existe
+    if (!fs.existsSync(uploadPath)) {
+      console.log(`[Multer] Creando directorio: ${uploadPath}`);
+      fs.mkdirSync(uploadPath, { recursive: true });
+    }
+    
     cb(null, uploadPath);
   },
   filename: function (req, file, cb) {
@@ -36,11 +45,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+// --- RUTAS ---
+
 router.get('/', getAllProducts);
 router.get('/all', getAllAdminProducts);
 router.get('/newest', getNewProducts);
 router.get('/bestsellers', getBestsellerProducts);
 router.get('/:id', getProductById);
+
+// Aplicamos el middleware 'upload' para crear y actualizar productos
 router.post('/', upload.array('newImages', 10), createProduct);
 router.put('/:id', upload.array('newImages', 10), updateProduct);
 router.delete('/:id', deleteProduct);

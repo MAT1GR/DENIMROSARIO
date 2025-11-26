@@ -32,7 +32,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'light' }) =
         {/* Primera imagen (visible por defecto) */}
         <img
           src={imageUrl}
-          alt={product.name}
+          alt={`Jean de mujer modelo ${product.name} color ${product.color || 'único'} talla ${Object.keys(product.sizes)[0] || 'única'} en Denim Rosario`}
           className={`w-full h-full object-cover aspect-[3/4] transition-opacity duration-500 ${isSoldOut ? 'grayscale' : ''} ${product.images && product.images.length > 1 ? 'group-hover:opacity-0' : ''}`}
           loading="lazy"
         />
@@ -41,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'light' }) =
         {product.images && product.images.length > 1 && (
           <img
             src={product.images[1]}
-            alt={`${product.name} - vista alternativa`}
+            alt={`Jean de mujer modelo ${product.name} color ${product.color || 'único'} en Denim Rosario - Vista alternativa`}
             className={`absolute inset-0 w-full h-full object-cover aspect-[3/4] opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${isSoldOut ? 'grayscale' : ''}`}
             loading="lazy"
           />

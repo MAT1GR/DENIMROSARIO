@@ -8,6 +8,7 @@ import SkeletonCard from "../components/SkeletonCard";
 import WhatsAppButton from "../components/WhatsAppButton";
 import homeImage from '../assets/home.webp'; // Import the image
 import CountdownTimer from "../components/CountdownTimer"; // Importado
+import { Helmet } from 'react-helmet-async';
 
 const HomePage: React.FC = () => {
   const [newProducts, setNewProducts] = useState<Product[]>([]);
@@ -103,6 +104,11 @@ const HomePage: React.FC = () => {
 
   return (
     <>
+      <Helmet>
+        <title>Denim Rosario | Jeans Premium y Ropa de Mujer</title>
+        <meta name="description" content="Encontrá los mejores jeans de calce perfecto en Rosario. Envíos a todo el país. Calidad premium sin seguir modas rápidas." />
+        <meta name="keywords" content="jeans rosario, denim, ropa mujer, pantalones tiro alto" />
+      </Helmet>
       <div className="bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white">
                     {/* Hero Section */}
                     <section
