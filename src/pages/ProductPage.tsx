@@ -2,8 +2,8 @@
 const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
   const measurements = {
     cintura: (product as any).waist_flat || "--",
-    cadera: (product as any).hip_flat || "--",
-    largo: (product as any).length || "--",
+    alto: (product as any).length || "--",
+    tiro_cm: (product as any).rise_cm || "--",
     tiro: (product as any).rise || "--",
   };
 
@@ -18,22 +18,20 @@ const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-4 text-sm text-gray-800">
+      <div className="grid grid-cols-3 gap-4 text-sm text-gray-800">
+        <div className="flex flex-col text-center">
+          <span className="text-xs text-gray-400 mb-1">Alto</span>
+          <span className="font-medium">{measurements.alto} cm</span>
+        </div>
         <div className="flex flex-col text-center">
           <span className="text-xs text-gray-400 mb-1">Cintura</span>
           <span className="font-medium">{measurements.cintura} cm</span>
-        </div>
-        <div className="flex flex-col text-center">
-          <span className="text-xs text-gray-400 mb-1">Cadera</span>
-          <span className="font-medium">{measurements.cadera} cm</span>
-        </div>
-        <div className="flex flex-col text-center">
-          <span className="text-xs text-gray-400 mb-1">Largo</span>
-          <span className="font-medium">{measurements.largo} cm</span>
+          {product.isWaistStretchy && <span className="text-xs text-gray-500">Elastizado</span>}
         </div>
         <div className="flex flex-col text-center">
           <span className="text-xs text-gray-400 mb-1">Tiro</span>
-          <span className="font-medium">{measurements.tiro}</span>
+          <span className="font-medium">{measurements.tiro_cm} cm</span>
+          <span className="text-xs text-gray-500">{measurements.tiro}</span>
         </div>
       </div>
     </div>
@@ -230,7 +228,7 @@ const ProductPage: React.FC = () => {
           <div className="max-w-7xl mx-auto px-4 lg:px-8 py-0">
             <div className="flex flex-col lg:flex-row lg:gap-16">
               <div className="lg:w-1/2">
-                <ProductMediaGallery images={product.images} />
+                <ProductMediaGallery images={product.images} video={product.video} />
               </div>
   
               <div className="lg:w-1/2 w-full lg:sticky lg:top-28 h-fit">

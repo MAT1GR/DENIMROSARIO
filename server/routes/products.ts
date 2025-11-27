@@ -20,18 +20,9 @@ const router = Router();
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    // ESTRATEGIA: Salir de la carpeta del backend y entrar a public_html
-    // process.cwd() es la carpeta 'backendnuevo'.
-    // '..' nos lleva atrás a '/home/denimros/'.
-    // Luego entramos a 'public_html/uploads'.
-    const uploadPath = path.join(process.cwd(), '../public_html/uploads');
+    const uploadPath = path.join(process.cwd(), 'public/uploads');
     
-    // Si prefieres la ruta absoluta directa, sería: 
-    // const uploadPath = '/home/denimros/public_html/uploads';
-    
-    // Verificamos y creamos el directorio si no existe
     if (!fs.existsSync(uploadPath)) {
-      console.log(`[Multer] Creando directorio: ${uploadPath}`);
       fs.mkdirSync(uploadPath, { recursive: true });
     }
     
@@ -43,7 +34,18 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req: any, file: any, cb: any) => {
+      if (file.fieldname === "video") {
+      if (file.mimetype === 'video/mp4' || file.mimetype === 'video/quicktime' || file.mimetype === 'video/webm') {
+        cb(null, true);
+      } else {
+        cb(new Error('Solo se permiten videos MP4, MOV y WEBM.'), false);
+      }
+    } else {    cb(null, true);
+  }
+};
+
+const upload = multer({ storage: storage, fileFilter: fileFilter });
 
 // --- RUTAS ---
 
@@ -54,8 +56,12 @@ router.get('/bestsellers', getBestsellerProducts);
 router.get('/:id', getProductById);
 
 // Aplicamos el middleware 'upload' para crear y actualizar productos
-router.post('/', upload.array('newImages', 10), createProduct);
-router.put('/:id', upload.array('newImages', 10), updateProduct);
+const uploadFields = upload.fields([
+  { name: 'newImages', maxCount: 10 },
+  { name: 'video', maxCount: 1 }
+]);
+router.post('/', uploadFields, createProduct);
+router.put('/:id', uploadFields, updateProduct);
 router.delete('/:id', deleteProduct);
 
 export default router;

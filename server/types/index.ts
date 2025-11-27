@@ -11,10 +11,11 @@ export interface Product {
   description: string;
   material: string;
   rise: string;
+  rise_cm?: number;
   fit: string;
   waist_flat?: number;
-  hip_flat?: number;
   length?: number;
+  isWaistStretchy?: boolean;
   sizes: {
     [key: string]: { available: boolean; stock: number; };
   };

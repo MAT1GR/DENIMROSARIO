@@ -66,28 +66,44 @@ export const getProductById = async (req: Request, res: Response) => {
 export const createProduct = async (req: Request, res: Response) => {
     try {
         const newProductData = req.body;
-        const files = req.files as Express.Multer.File[];
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
         
+        console.log('[DEBUG] Raw data received:', newProductData);
+
         // Data Type Conversion
         newProductData.price = parseFloat(newProductData.price) || 0;
-        newProductData.waist_flat = newProductData.waist_flat ? parseInt(newProductData.waist_flat, 10) : null;
-        newProductData.hip_flat = newProductData.hip_flat ? parseInt(newProductData.hip_flat, 10) : null;
-        newProductData.length = newProductData.length ? parseInt(newProductData.length, 10) : null;
+        const waistFlat = parseInt(newProductData.waist_flat, 10);
+        newProductData.waist_flat = isNaN(waistFlat) ? null : waistFlat;
+        const length = parseInt(newProductData.length, 10);
+        newProductData.length = isNaN(length) ? null : length;
+        const riseCm = parseInt(newProductData.rise_cm, 10);
+        newProductData.rise_cm = isNaN(riseCm) ? null : riseCm;
         newProductData.isNew = newProductData.isNew === 'true';
         newProductData.isBestSeller = newProductData.isBestSeller === 'true';
         newProductData.isActive = newProductData.isActive === 'true';
+        newProductData.isWaistStretchy = newProductData.isWaistStretchy === 'true';
         
         if (newProductData.sizes && typeof newProductData.sizes === 'string') {
             newProductData.sizes = JSON.parse(newProductData.sizes);
         }
         
-        const imagePaths = files ? files.map(file => `/uploads/${file.filename}`) : [];
-        newProductData.images = imagePaths;
+        if (files.newImages) {
+            newProductData.images = files.newImages.map(file => `/uploads/${file.filename}`);
+        } else {
+            newProductData.images = [];
+        }
+
+        if (files.video) {
+            newProductData.video = `/uploads/${files.video[0].filename}`;
+        }
         
+        console.log('[DEBUG] Data before sending to DB:', newProductData);
+
         const createdProductId = await db.products.create(newProductData);
         const createdProduct = await db.products.getById(createdProductId);
         res.status(201).json(createdProduct);
     } catch (error) {
+        console.error('--- CREATE PRODUCT ERROR CATCH BLOCK ---');
         console.error("Error creating product:", error);
         res.status(500).json({ message: 'Error al crear el producto' });
     }
@@ -95,17 +111,27 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
     try {
-        const { existingImages, ...productData } = req.body;
-        const files = req.files as Express.Multer.File[];
+        const { existingImages, existingVideoUrl, ...productData } = req.body;
+        const files = req.files as { [fieldname: string]: Express.Multer.File[] };
 
         // Data Type Conversion
         if (productData.price) productData.price = parseFloat(productData.price);
-        if (productData.waist_flat) productData.waist_flat = parseInt(productData.waist_flat, 10);
-        if (productData.hip_flat) productData.hip_flat = parseInt(productData.hip_flat, 10);
-        if (productData.length) productData.length = parseInt(productData.length, 10);
+        if (productData.hasOwnProperty('waist_flat')) {
+            const parsed = parseInt(productData.waist_flat, 10);
+            productData.waist_flat = isNaN(parsed) ? null : parsed;
+        }
+        if (productData.hasOwnProperty('length')) {
+            const parsed = parseInt(productData.length, 10);
+            productData.length = isNaN(parsed) ? null : parsed;
+        }
+        if (productData.hasOwnProperty('rise_cm')) {
+            const parsed = parseInt(productData.rise_cm, 10);
+            productData.rise_cm = isNaN(parsed) ? null : parsed;
+        }
         if (productData.isNew) productData.isNew = productData.isNew === 'true';
         if (productData.isBestSeller) productData.isBestSeller = productData.isBestSeller === 'true';
         if (productData.isActive) productData.isActive = productData.isActive === 'true';
+        if (productData.isWaistStretchy) productData.isWaistStretchy = productData.isWaistStretchy === 'true';
 
         if (productData.sizes && typeof productData.sizes === 'string') {
             productData.sizes = JSON.parse(productData.sizes);
@@ -113,12 +139,20 @@ export const updateProduct = async (req: Request, res: Response) => {
 
         let finalImagePaths = existingImages ? JSON.parse(existingImages) : [];
         
-        if (files && files.length > 0) {
-            const newImagePaths = files.map(file => `/uploads/${file.filename}`);
+        if (files.newImages && files.newImages.length > 0) {
+            const newImagePaths = files.newImages.map(file => `/uploads/${file.filename}`);
             finalImagePaths = [...finalImagePaths, ...newImagePaths];
         }
 
         productData.images = finalImagePaths;
+
+        if (files.video && files.video.length > 0) {
+            productData.video = `/uploads/${files.video[0].filename}`;
+        } else if (existingVideoUrl) {
+            productData.video = existingVideoUrl;
+        } else {
+            productData.video = null;
+        }
 
         const updated = await db.products.update(req.params.id, productData);
         if (updated) {
