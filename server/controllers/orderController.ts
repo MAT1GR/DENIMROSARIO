@@ -1,5 +1,11 @@
 import { Request, Response } from 'express';
 import { db } from '../lib/database.js';
+import { sendMetaConversionEvent } from '../lib/metaConversionService.js';
+import crypto from 'crypto'; // Import crypto for hashing
+
+const hashSha256 = (value: string): string => {
+    return crypto.createHash('sha256').update(value.trim().toLowerCase()).digest('hex');
+};
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
@@ -27,6 +33,34 @@ export const createOrder = async (req: Request, res: Response) => {
 
         const orderId = db.orders.create(newOrder); // Assuming db.orders.create exists and returns an ID
         res.status(201).json({ message: 'Pedido creado exitosamente', orderId });
+
+        // --- Send Meta Conversion API Purchase Event ---
+        try {
+            const hashedEmail = customerEmail ? hashSha256(customerEmail) : undefined;
+            const clientIpAddress = req.ip;
+            const clientUserAgent = req.headers['user-agent'];
+
+            const purchaseEvent = {
+                event_name: 'Purchase',
+                event_time: Math.floor(Date.now() / 1000), // Unix timestamp
+                action_source: 'website',
+                user_data: {
+                    em: hashedEmail ? [hashedEmail] : undefined,
+                    client_ip_address: clientIpAddress,
+                    client_user_agent: clientUserAgent,
+                },
+                custom_data: {
+                    currency: 'USD', // Assuming USD, adjust as needed
+                    value: total,
+                    content_ids: items.map((item: any) => item.productId), // Assuming items have a productId
+                },
+            };
+            await sendMetaConversionEvent(purchaseEvent);
+        } catch (metaError) {
+            console.error('Error sending Meta Conversion API event:', metaError);
+            // Do not block the order creation response if Meta event fails
+        }
+
     } catch (error) {
         console.error("Error creating order:", error);
         res.status(500).json({ message: 'Error al crear el pedido' });

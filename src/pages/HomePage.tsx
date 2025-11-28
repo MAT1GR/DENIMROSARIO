@@ -12,7 +12,6 @@ import { Helmet } from 'react-helmet-async';
 
 const HomePage: React.FC = () => {
   const [newProducts, setNewProducts] = useState<Product[]>([]);
-  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showWhatsAppButton, setShowWhatsAppButton] = useState(false);
@@ -25,20 +24,17 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [newProductsRes, allProductsRes] = await Promise.all([
-          fetch("/api/products/newest?limit=4"),
-          fetch("/api/products"), 
-        ]);
+        const newProductsRes = await fetch("/api/products/newest?limit=4");
+        
 
-        if (!newProductsRes.ok || !allProductsRes.ok) {
+        if (!newProductsRes.ok) {
           throw new Error('Failed to fetch products');
         }
 
         const newProductsData = await newProductsRes.json();
-        const allProductsData = await allProductsRes.json();
-
+        
         setNewProducts(newProductsData);
-        setAllProducts(allProductsData.products);
+        
 
       } catch (error) {
         setError("Error al cargar los productos. Por favor, intentá de nuevo más tarde.");
