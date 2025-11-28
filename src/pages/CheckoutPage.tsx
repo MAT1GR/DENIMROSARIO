@@ -148,7 +148,9 @@ const CheckoutPage: React.FC = () => {
             cost: selectedShipping.cost,
           }
         : null,
-      shippingDetails: selectedShipping?.name || null, // Now using the shipping option name as details
+      shippingDetails: selectedShipping?.id === 'cadete' 
+        ? selectedCadeteDay?.label || null 
+        : selectedShipping?.name || null,
       total: finalTotal,
     };
 
@@ -172,7 +174,7 @@ const CheckoutPage: React.FC = () => {
         }
       } catch (err: any) {
         setError(err.message);
-        setIsLoading(false); // Asegurarse de detener la carga en caso de error
+        setIsLoading(false);
       }
     } else if (paymentMethod === "transferencia") {
       try {

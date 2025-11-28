@@ -57,7 +57,7 @@ const createMercadoPagoPreference = async (req: Request, res: Response) => {
     }
 
     const client = new MercadoPagoConfig({ accessToken });
-    const { items, shippingCost, shippingInfo, shipping } = req.body;
+    const { items, shippingCost, shippingInfo, shipping, shippingDetails } = req.body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ message: "Carrito vacío." });
@@ -93,17 +93,16 @@ const createMercadoPagoPreference = async (req: Request, res: Response) => {
       items: validatedItems, // Guardamos los items con el precio real
       total: total,
       status: "pending",
-      shippingInfo: {
-          streetName: shippingInfo.streetName || null,
-          streetNumber: shippingInfo.streetNumber || null,
-          apartment: shippingInfo.apartment || null,
-          description: shippingInfo.description || null,
-          city: shippingInfo.city || null,
-          postalCode: shippingInfo.postalCode || null,
-          province: shippingInfo.province || null,
-      },
+      shippingStreetName: shippingInfo.streetName || null,
+      shippingStreetNumber: shippingInfo.streetNumber || null,
+      shippingApartment: shippingInfo.apartment || null,
+      shippingDescription: shippingInfo.description || null,
+      shippingCity: shippingInfo.city || null,
+      shippingPostalCode: shippingInfo.postalCode || null,
+      shippingProvince: shippingInfo.province || null,
       shippingCost: safeShippingCost,
       shippingName: shipping?.name || 'No especificado',
+      shippingDetails: shippingDetails || null,
       createdAt: new Date(),
     });
 
@@ -198,7 +197,7 @@ const processPayment = async (req: Request, res: Response) => {
 };
 
 const createTransferOrder = async (req: Request, res: Response) => {
-  const { items, shippingInfo, shipping } = req.body;
+  const { items, shippingInfo, shipping, shippingDetails } = req.body;
 
   try {
     if (!items || items.length === 0) return res.status(400).json({ message: "Carrito vacío." });
@@ -235,17 +234,16 @@ const createTransferOrder = async (req: Request, res: Response) => {
       items: validatedItems,
       total: finalTotal,
       status: "pending" as const,
-      shippingInfo: {
-          streetName: shippingInfo.streetName || null,
-          streetNumber: shippingInfo.streetNumber || null,
-          apartment: shippingInfo.apartment || null,
-          description: shippingInfo.description || null,
-          city: shippingInfo.city || null,
-          postalCode: shippingInfo.postalCode || null,
-          province: shippingInfo.province || null,
-      },
+      shippingStreetName: shippingInfo.streetName || null,
+      shippingStreetNumber: shippingInfo.streetNumber || null,
+      shippingApartment: shippingInfo.apartment || null,
+      shippingDescription: shippingInfo.description || null,
+      shippingCity: shippingInfo.city || null,
+      shippingPostalCode: shippingInfo.postalCode || null,
+      shippingProvince: shippingInfo.province || null,
       shippingCost: shippingCost,
       shippingName: shipping.name || 'No especificado',
+      shippingDetails: shippingDetails || null,
       createdAt: new Date(),
     });
 
