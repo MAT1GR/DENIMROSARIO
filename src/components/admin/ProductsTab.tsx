@@ -76,16 +76,6 @@ export const ProductsTab: React.FC = () => {
     setEditingProduct(null);
   };
 
-  const getCorrectImageUrl = (path: string) => {
-    if (!path) return '';
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    let processedPath = path;
-    if (processedPath.startsWith('/uploads/')) {
-      processedPath = `/api${processedPath}`;
-    }
-    return `${apiBaseUrl}${processedPath}`;
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
@@ -111,10 +101,14 @@ export const ProductsTab: React.FC = () => {
               <tr><td colSpan={5} className="p-8 text-center text-gray-500">Cargando...</td></tr>
             ) : products.map((product) => {
               const totalStock = Object.values(product.sizes).reduce((acc, size) => acc + (size.stock || 0), 0);
+              const imageUrl = (product.images && product.images.length > 0 && product.images[0].startsWith('/uploads/'))
+                ? `/api${product.images[0]}`
+                : 'https://via.placeholder.com/100'; // Placeholder for missing or invalid images
+
               return (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="p-4 flex items-center gap-3">
-                    <img src={getCorrectImageUrl(product.images[0])} alt={product.name} className="w-12 h-12 object-cover rounded" />
+                    <img src={imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded" />
                     <span className="font-medium text-gray-800">{product.name}</span>
                   </td>
                   <td className="p-4 text-gray-700">${product.price.toLocaleString('es-AR')}</td>

@@ -1,0 +1,46 @@
+# BROWSER CACHING RULES
+<IfModule mod_expires.c>
+  ExpiresActive On
+
+  # Images
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/jpg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/gif "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+
+  # CSS, JavaScript
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+
+  # Fonts
+  ExpiresByType font/woff "access plus 1 year"
+  ExpiresByType font/woff2 "access plus 1 year"
+</IfModule>
+
+# REACT ROUTER SPA ROUTING RULES
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ----------------------------------------------------------------------
+    # 1. EXCLUIR LA API Y ARCHIVOS ESTÁTICOS
+    # ----------------------------------------------------------------------
+    # Si la petición empieza por "api/", NO aplicar ninguna regla y dejarla pasar.
+    # Esto permite que tu backend (que ya funcionaba con el archivo vacío) reciba la petición.
+    RewriteRule ^api/ - [L]
+    RewriteRule ^uploads/ - [L]
+
+    # ----------------------------------------------------------------------
+    # 2. REGLAS PARA REACT ROUTER (SPA)
+    # ----------------------------------------------------------------------
+    # Si el archivo o carpeta solicitada existe, sírvelo directamente (imágenes, css, js).
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Para todo lo demás (como /admin, /tienda, /producto/123), servir index.html
+    # para que React Router tome el control sin recargar la página.
+    RewriteRule ^ index.html [L]
+</IfModule>

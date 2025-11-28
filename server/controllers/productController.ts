@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { db } from '../lib/database.js';
+import NodeCache from 'node-cache';
+
+// Cache for 60 seconds
+const productsCache = new NodeCache({ stdTTL: 60 });
 
 
 export const getAllProducts = async (req: Request, res: Response) => {
@@ -29,9 +33,19 @@ export const getAllAdminProducts = async (req: Request, res: Response) => {
 };
 
 export const getNewProducts = async (req: Request, res: Response) => {
+    const cacheKey = 'newest-products';
     try {
+        const cachedProducts = productsCache.get(cacheKey);
+        if (cachedProducts) {
+            console.log('[Cache] HIT for newest-products');
+            return res.json(cachedProducts);
+        }
+
+        console.log('[Cache] MISS for newest-products');
         const limit = Number(req.query.limit) || 4;
         const products = await db.products.getNewest(limit);
+        
+        productsCache.set(cacheKey, products);
         res.json(products);
     } catch (error) {
         console.error("Error fetching new products:", error);

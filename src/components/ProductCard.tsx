@@ -8,25 +8,15 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, theme = 'light' }) => {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-
-  // Función auxiliar para corregir la ruta
-  const getCorrectimageUrl = (path: string | undefined) => {
-    if (!path) return '';
-    let processedPath = path;
-    if (processedPath.startsWith('/uploads/')) {
-      processedPath = `/api${processedPath}`;
-    }
-    return `${apiBaseUrl}${processedPath}`;
-  };
-
   // Procesar imagen principal
-  const rawImage1 = (product.images && Array.isArray(product.images) && product.images[0]) ? product.images[0] : '';
-  const imageUrl = rawImage1 ? getCorrectimageUrl(rawImage1) : 'https://via.placeholder.com/400x500';
+  const imageUrl = (product.images && Array.isArray(product.images) && product.images.length > 0 && product.images[0].startsWith('/uploads/'))
+    ? `/api${product.images[0]}`
+    : 'https://via.placeholder.com/400x500';
 
   // Procesar segunda imagen (hover)
-  const rawImage2 = (product.images && product.images.length > 1) ? product.images[1] : '';
-  const secondImageUrl = getCorrectimageUrl(rawImage2);
+  const secondImageUrl = (product.images && product.images.length > 1 && product.images[1].startsWith('/uploads/'))
+    ? `/api${product.images[1]}`
+    : '';
 
   const textColor = theme === 'dark' ? 'text-white' : 'text-black';
   

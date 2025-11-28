@@ -15,7 +15,24 @@ const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showWhatsAppButton, setShowWhatsAppButton] = useState(false);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  // Hardcoded testimonials data
+  const hardcodedTestimonials = [
+    {
+      id: 1,
+      customerName: '@ornellamagi',
+      content: 'Holis, ya retiré las cositas. Enamorada del jean realmente 🙏🏻',
+    },
+    {
+      id: 2,
+      customerName: '@alaniisleo',
+      content: 'Gracias bella! Me encanto el jean blanco 😍'
+    },
+    {
+      id: 3,
+      customerName: '@_leimai.',
+      content: 'Ya me llego, esta muy bueno el jean. Gracias.',
+    },
+  ];
 
   const lastDropSectionRef = useRef<HTMLElement>(null);
 
@@ -45,22 +62,6 @@ const HomePage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const response = await fetch("/api/testimonials");
-        if (!response.ok) {
-          throw new Error('Failed to fetch testimonials');
-        }
-        const data = await response.json();
-        setTestimonials(data);
-      } catch (error) {
-        console.error("Error fetching testimonials:", error);
-      }
-    };
-    fetchTestimonials();
   }, []);
 
   useEffect(() => {
@@ -106,11 +107,15 @@ const HomePage: React.FC = () => {
         <meta name="keywords" content="jeans rosario, denim, ropa mujer, pantalones tiro alto" />
       </Helmet>
       <div className="bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white">
-                    {/* Hero Section */}
                     <section
-                      className="min-h-[70vh] lg:min-h-screen relative flex flex-col items-center justify-center text-center px-4 py-20 lg:py-32 bg-cover bg-center" 
-                      style={{ backgroundImage: `url(${homeImage})` }}
+                      className="min-h-[70vh] lg:min-h-screen relative flex flex-col items-center justify-center text-center px-4 py-20 lg:py-32"
                     >
+                      <img
+                        src={homeImage}
+                        alt="Modelo vistiendo jeans de Denim Rosario"
+                        fetchpriority="high"
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                      />
                       <div className="absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.45)]" />
                       <div className="z-10 w-full px-4">
             <div className="countdown-section">
@@ -204,7 +209,7 @@ const HomePage: React.FC = () => {
               </h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial) => (
+              {hardcodedTestimonials.map((testimonial) => (
                 <TestimonialCard key={testimonial.id} testimonial={testimonial} />
               ))}
             </div>
