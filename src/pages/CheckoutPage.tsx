@@ -3,11 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { Lock, CreditCard, Banknote } from "lucide-react";
 import { useCart } from "../hooks/useCart";
 import { CartItem as CartItemType } from "../../server/types";
+import { CadeteDaySelector } from "../components/CadeteDaySelector";
 
 interface ShippingOption {
   id: string;
   name: string;
   cost: number;
+}
+
+interface DayOption {
+  value: string;
+  label: string;
 }
 
 const CheckoutPage: React.FC = () => {
@@ -34,6 +40,7 @@ const CheckoutPage: React.FC = () => {
   const [shippingOptions, setShippingOptions] = useState<ShippingOption[]>([]);
   const [selectedShipping, setSelectedShipping] =
     useState<ShippingOption | null>(null);
+  const [selectedCadeteDay, setSelectedCadeteDay] = useState<DayOption | null>(null);
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
   const [paymentMethod, setPaymentMethod] = useState("mercado-pago");
@@ -53,36 +60,64 @@ const CheckoutPage: React.FC = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
+  
+  const handleShippingChange = (option: ShippingOption) => {
+    setSelectedShipping(option);
+    if (option.id !== 'cadete') {
+      setSelectedCadeteDay(null); // Reset day if not cadete
+    }
+  };
 
   const handleCalculateShipping = useCallback(async () => {
     if (formData.postalCode.length < 4) return;
+
     setIsCalculatingShipping(true);
     setShippingOptions([]);
     setSelectedShipping(null);
+    setSelectedCadeteDay(null);
     setError(null);
-    try {
-      const response = await fetch("/api/shipping/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ postalCode: formData.postalCode }),
-      });
-      const data = await response.json();
-      if (data.options && data.options.length > 0) {
-        setShippingOptions(data.options);
-        const cheapest = data.options.reduce((prev: any, current: any) =>
-          prev.cost < current.cost ? prev : current
-        );
-        setSelectedShipping(cheapest);
-      } else {
-        setError(
-          "No se encontraron opciones de envío para este código postal."
-        );
-      }
-    } catch (error) {
-      console.error("Error al calcular envío:", error);
-      setError("No se pudo calcular el envío. Intenta de nuevo.");
-    } finally {
+
+    if (formData.postalCode === '2000') {
+      const rosarioOptions: ShippingOption[] = [
+        { id: 'cadete', name: 'Cadete', cost: 3500 },
+        { id: 'correo', name: 'Correo Argentino', cost: 4900 },
+        { id: 'retiro', name: 'Punto de retiro', cost: 0 },
+      ];
+      setShippingOptions(rosarioOptions);
       setIsCalculatingShipping(false);
+    } else {
+      // For postal codes other than Rosario, use the existing API logic for Correo Argentino
+      try {
+        const response = await fetch("/api/shipping/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ postalCode: formData.postalCode }),
+        });
+        const data = await response.json();
+        if (data.options && data.options.length > 0) {
+          const processedOptions = data.options.map((option: ShippingOption) => {
+            if (option.id === 'correo') {
+              return { ...option, name: `${option.name} (de 2 a 5 días hábiles)` };
+            }
+            return option;
+          });
+          setShippingOptions(processedOptions);
+          // Automatically select the cheapest option as per previous logic
+          const cheapest = processedOptions.reduce((prev: any, current: any) =>
+            prev.cost < current.cost ? prev : current
+          );
+          setSelectedShipping(cheapest);
+        } else {
+          setError(
+            "No se encontraron opciones de envío para este código postal."
+          );
+        }
+      } catch (error) {
+        console.error("Error al calcular envío:", error);
+        setError("No se pudo calcular el envío. Intenta de nuevo.");
+      } finally {
+        setIsCalculatingShipping(false);
+      }
     }
   }, [formData.postalCode]);
 
@@ -103,15 +138,28 @@ const CheckoutPage: React.FC = () => {
     const finalTotal =
       paymentMethod === "mercado-pago" ? totalWithDiscount : total;
 
+    const orderPayload = {
+      items: cartItems,
+      shippingInfo: formData,
+      shipping: selectedShipping
+        ? {
+            id: selectedShipping.id,
+            name: selectedShipping.name,
+            cost: selectedShipping.cost,
+          }
+        : null,
+      shippingDetails: selectedShipping?.name || null, // Now using the shipping option name as details
+      total: finalTotal,
+    };
+
     if (paymentMethod === "mercado-pago") {
       try {
         const response = await fetch("/api/payments/create-preference", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            items: cartItems,
+            ...orderPayload,
             shippingCost: selectedShipping?.cost || 0,
-            shippingInfo: formData,
           }),
         });
         if (!response.ok)
@@ -126,23 +174,12 @@ const CheckoutPage: React.FC = () => {
         setError(err.message);
         setIsLoading(false); // Asegurarse de detener la carga en caso de error
       }
-    } else if (paymentMethod === "mercado-pago") {
+    } else if (paymentMethod === "transferencia") {
       try {
         const response = await fetch("/api/payments/create-transfer-order", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            items: cartItems,
-            shippingInfo: formData,
-            shipping: selectedShipping
-              ? {
-                  id: selectedShipping.id,
-                  name: selectedShipping.name,
-                  cost: selectedShipping.cost,
-                }
-              : null,
-            total: finalTotal,
-          }),
+          body: JSON.stringify(orderPayload),
         });
 
         if (!response.ok) {
@@ -176,6 +213,7 @@ const CheckoutPage: React.FC = () => {
   const displayedTotal =
     paymentMethod === "mercado-pago" ? totalWithDiscount : total;
 
+
   return (
     <div className="min-h-screen bg-blanco-hueso">
       <div className="container mx-auto px-4 py-8 lg:py-12">
@@ -200,7 +238,7 @@ const CheckoutPage: React.FC = () => {
                 <legend className="text-xl font-bold mb-4 text-gris-oscuro">
                   2. DATOS DE ENVÍO
                 </legend>
-                <p className="text-sm text-gray-600 -mt-2 mb-4">Envíamos desde Rosario en 24–48h.</p>
+                <p className="text-sm text-gray-600 -mt-2 mb-4">Enviamos desde Rosario en 48-72hs.</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InputField
                     name="firstName"
@@ -240,24 +278,47 @@ const CheckoutPage: React.FC = () => {
                         key={option.id}
                         className="flex items-center justify-between p-3 border rounded-lg cursor-pointer has-[:checked]:bg-arena/30 has-[:checked]:border-black"
                       >
-                        <div className="flex items-center">
-                          <input
-                            type="radio"
-                            name="shippingOption"
-                            value={option.id}
-                            checked={selectedShipping?.id === option.id}
-                            onChange={() => setSelectedShipping(option)}
-                            className="h-4 w-4 text-black focus:ring-black"
-                          />
-                          <span className="ml-3 text-sm text-gris-oscuro">
-                            {option.name}
-                          </span>
+                        <div className="flex flex-col flex-grow"> {/* Use flex-col to stack name and description */}
+                          <div className="flex items-center">
+                            <input
+                              type="radio"
+                              name="shippingOption"
+                              value={option.id}
+                              checked={selectedShipping?.id === option.id}
+                              onChange={() => handleShippingChange(option)}
+                              className="h-4 w-4 text-black focus:ring-black"
+                            />
+                            <span className="ml-3 text-sm text-gris-oscuro">
+                              {option.name}
+                            </span>
+                          </div>
+                          {option.id === 'correo' && (
+                            <span className="ml-8 text-xs text-gray-500">
+                              (De 2 a 5 días hábiles)
+                            </span>
+                          )}
+                          {option.id === 'retiro' && (
+                            <span className="ml-8 text-xs text-gray-500">
+                              (Centeno 2960, Rosario)
+                            </span>
+                          )}
+                          {option.id === 'cadete' && (
+                            <span className="ml-8 text-xs text-gray-500">
+                              (Solo Rosario)
+                            </span>
+                          )}
                         </div>
                         <span className="font-medium text-sm">
                           ${option.cost.toLocaleString("es-AR").replace(/\./g, '')}
                         </span>
                       </label>
                     ))}
+                    {selectedShipping?.id === 'cadete' && (
+                      <CadeteDaySelector 
+                        selectedDay={selectedCadeteDay}
+                        onDaySelect={setSelectedCadeteDay}
+                      />
+                    )}
                   </div>
                 )}
 
@@ -283,6 +344,12 @@ const CheckoutPage: React.FC = () => {
                   name="apartment"
                   placeholder="Departamento (opcional)"
                   value={formData.apartment}
+                  onChange={handleChange}
+                />
+                <InputField
+                  name="description"
+                  placeholder="Detalles de envío (ej: portón azul, esquina, etc.)"
+                  value={formData.description}
                   onChange={handleChange}
                 />
                 <InputField
@@ -444,12 +511,10 @@ const PaymentOption = ({
 const CartItem = ({ item }: { item: CartItemType }) => {
   const getCorrectImageUrl = (path: string) => {
     if (!path) return '';
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
-    let processedPath = path;
-    if (processedPath.startsWith('/uploads/')) {
-      processedPath = `/api${processedPath}`;
+    if (path.startsWith('/uploads/')) {
+      return `/api${path}`;
     }
-    return `${apiBaseUrl}${processedPath}`;
+    return path;
   };
 
   return (

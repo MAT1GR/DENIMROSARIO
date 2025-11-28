@@ -69,6 +69,7 @@ export interface Order {
   // --- CORRECCIÓN AQUÍ ---
   // Se añade la propiedad que faltaba y que usaban otros archivos
   shippingName?: string; 
+  shippingDetails?: string | null;
   createdAt: Date;
 }
 

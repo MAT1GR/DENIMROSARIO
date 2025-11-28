@@ -69,14 +69,23 @@ export const OrderDetailModal: React.FC<OrderDetailModalProps> = ({ order, onClo
             </div>
           </div>
 
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center gap-2 text-gray-600 mb-2"><MapPin size={18} /> Dirección de Envío</div>
-            <p className="font-medium">{fullAddress}</p>
-            <p className="text-sm text-gray-500">
-              {order.shippingCity} ({order.shippingPostalCode})
-            </p>
-          </div>
-
+                      <div className="p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-2 text-gray-600 mb-2"><MapPin size={18} /> Dirección de Envío</div>
+                        <p className="font-medium">{fullAddress}</p>
+                        <p className="text-sm text-gray-500">
+                          {order.shippingCity} ({order.shippingPostalCode})
+                        </p>
+                        {order.shippingDetails && (
+                          <p className="text-sm text-gray-700 mt-1">
+                            <span className="font-medium">Entrega:</span> {order.shippingDetails}
+                          </p>
+                        )}
+                        {order.shippingDescription && (
+                          <p className="text-sm text-gray-700 mt-1">
+                            <span className="font-medium">Detalles:</span> {order.shippingDescription}
+                          </p>
+                        )}
+                      </div>
           <div>
             <h3 className="font-bold text-lg mb-3">Productos</h3>
             <div className="space-y-4 max-h-60 overflow-y-auto pr-2 border rounded-lg p-4 bg-gray-50">

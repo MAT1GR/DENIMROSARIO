@@ -78,6 +78,7 @@ const parseOrder = (row: any): Order => ({
   shippingProvince: row.shipping_province,
   shippingCost: row.shipping_cost,
   shippingName: row.shipping_name,
+  shippingDetails: row.shipping_details,
   createdAt: new Date(row.created_at),
 });
 
@@ -350,6 +351,7 @@ export const orderService = {
         items,
         total,
         status,
+        shippingDetails, // Corrected from shipping_details to match JS conventions
         createdAt = new Date()
     } = orderData;
 
@@ -367,8 +369,8 @@ export const orderService = {
 
     db.run(
       `INSERT INTO orders (id, customer_id, customer_name, customer_email, customer_phone, customer_doc_number, items, total, status, created_at, 
-        shipping_street_name, shipping_street_number, shipping_apartment, shipping_description, shipping_city, shipping_postal_code, shipping_province, shipping_cost, shipping_name)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        shipping_street_name, shipping_street_number, shipping_apartment, shipping_description, shipping_city, shipping_postal_code, shipping_province, shipping_cost, shipping_name, shipping_details)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         orderId,
         customerId,
@@ -388,7 +390,8 @@ export const orderService = {
         shippingPostalCode,
         shippingProvince,
         shippingCost,
-        shippingName
+        shippingName,
+        shippingDetails || null
       ]
     );
     saveDatabase();

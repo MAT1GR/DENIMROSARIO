@@ -70,6 +70,7 @@ export function initializeSchema() {
       shipping_province TEXT,
       shipping_cost INTEGER,
       shipping_name TEXT,
+      shipping_details TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 

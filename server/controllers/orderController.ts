@@ -11,7 +11,7 @@ export const createOrder = async (req: Request, res: Response) => {
     try {
         // --- CORRECCIÓN AQUÍ ---
         // Se añaden customerName, customerEmail y se renombra totalAmount a total
-        const { customerId, customerName, customerEmail, items, shippingAddress, shippingMethod, paymentMethod, total, status = 'pending' } = req.body;
+        const { customerId, customerName, customerEmail, items, shippingAddress, shippingMethod, shippingDetails, paymentMethod, total, status = 'pending' } = req.body;
 
         // Se añaden a la validación
         if (!customerId || !customerName || !customerEmail || !items || !shippingAddress || !shippingMethod || !paymentMethod || !total) {
@@ -25,6 +25,7 @@ export const createOrder = async (req: Request, res: Response) => {
             items,
             shippingAddress,
             shippingMethod,
+            shippingDetails, // Añadido
             paymentMethod,
             total, // Renombrado
             status,
