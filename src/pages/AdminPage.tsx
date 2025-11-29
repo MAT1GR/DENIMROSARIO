@@ -3,12 +3,11 @@ import { useAuth } from '../hooks/useAuth';
 import AdminLogin from '../components/AdminLogin';
 import { DashboardTab } from '../components/admin/DashboardTab';
 import { ProductsTab } from '../components/admin/ProductsTab';
-import { CategoriesTab } from '../components/admin/CategoriesTab';
 import { OrdersTab } from '../components/admin/OrdersTab';
 import { CustomersTab } from '../components/admin/CustomersTab';
 import { SettingsTab } from '../components/admin/SettingsTab';
 import { 
-  BarChart3, Package, Tag, ShoppingCart, Users, Settings, LogOut 
+  BarChart3, Package, ShoppingCart, Users, Settings, LogOut 
 } from 'lucide-react';
 
 const AdminPage: React.FC = () => {
@@ -22,7 +21,6 @@ const AdminPage: React.FC = () => {
   const tabs = [
     { id: 'dashboard', label: 'Dashboard', icon: BarChart3, component: <DashboardTab /> },
     { id: 'products', label: 'Productos', icon: Package, component: <ProductsTab /> },
-    { id: 'categories', label: 'Categorías', icon: Tag, component: <CategoriesTab /> },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart, component: <OrdersTab /> },
     { id: 'customers', label: 'Clientes', icon: Users, component: <CustomersTab /> },
     { id: 'settings', label: 'Configuración', icon: Settings, component: <SettingsTab /> }
