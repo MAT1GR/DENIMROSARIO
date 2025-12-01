@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
-import { X, Trash2, Plus, Minus, ArrowRight } from "lucide-react";
+import { X, Trash2, Plus, Minus, ArrowRight, Truck } from "lucide-react";
 
 interface CartSidebarProps {
   isOpen: boolean;
@@ -123,15 +123,6 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
             {/* Footer Section (Fixed at the bottom) */}
             <div className="p-6 border-t bg-white">
               
-              {/* Aviso de Envío Gratis en el Footer del Carrito */}
-              {total > 0 && (
-                <div className="text-center text-sm mb-4 bg-green-50 p-3 rounded-lg border border-green-100">
-                  <p className="font-bold text-green-800 flex items-center justify-center gap-2">
-                    <span>✨</span> ¡Tenés ENVÍO GRATIS en este pedido!
-                  </p>
-                </div>
-              )}
-
               <div className="flex justify-between items-center text-lg">
                 <span className="font-bold">Subtotal</span>
                 <span className="font-bold">
@@ -139,12 +130,21 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                 </span>
               </div>
               <p className="text-right text-sm text-gray-500 mt-1 mb-4">
-                O hasta 24 x ${" "}
-                {(total / 24).toLocaleString("es-AR", {
+                O 3 cuotas de ${" "}
+                {(total / 3).toLocaleString("es-AR", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
               </p>
+
+              {/* Aviso de Envío Gratis en el Footer del Carrito */}
+              {total > 0 && (
+                <div className="text-center text-sm mb-4 bg-green-50 p-3 rounded-lg border border-green-100">
+                  <p className="font-bold text-green-800 flex items-center justify-center gap-2">
+                    <Truck size={18} /> TENÉS ENVÍO GRATIS.
+                  </p>
+                </div>
+              )}
 
               <Link
                 to="/checkout"

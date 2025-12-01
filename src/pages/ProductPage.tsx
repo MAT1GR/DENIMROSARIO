@@ -60,7 +60,6 @@ import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import ProductCard from "../components/ProductCard";
 import { Helmet } from 'react-helmet-async';
 import Accordion from '../components/Accordion'; // Import the Accordion component
-import SizeGuideModal from '../components/SizeGuideModal';
 
 interface ShippingOption {
   id: string;
@@ -98,12 +97,10 @@ const ProductPage: React.FC = () => {
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
-  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
     const descriptionRef = useRef<HTMLDivElement>(null);
     const relatedRef = useScrollAnimation<HTMLElement>();
     const STANDARD_SIZES = ["34", "36", "38", "40", "42", "44"];
   
-
     useEffect(() => {
       const fetchProductData = async () => {
         if (!id) return;
@@ -228,7 +225,7 @@ const ProductPage: React.FC = () => {
   
     return (
       <>
-        {isSizeGuideOpen && <SizeGuideModal onClose={() => setIsSizeGuideOpen(false)} />}
+
         <Helmet>
           <title>{product.name} | Denim Rosario</title>
           <meta name="description" content={`Comprá ${product.name} en Denim Rosario. ${product.description.substring(0, 150)}...`} />
@@ -270,16 +267,16 @@ const ProductPage: React.FC = () => {
                     {product.name}
                   </h1>
   
-                  <p className="text-3xl mt-4">${product.price}</p>
+                  <p className="text-3xl mt-4">${product.price.toLocaleString('es-AR')}</p>
   
-                  {/* Mensaje de Envío Gratis Fijo (Reemplaza a la calculadora) */}
-                  <div className="my-6 p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-4">
-                    <div className="bg-green-100 p-2 rounded-full">
-                      <Truck size={20} className="text-green-700" />
+                  {/* Mensaje de Envío Gratis Fijo */}
+                  <div className="my-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-4">
+                    <div className="bg-green-600 p-2 rounded-full text-white">
+                      <Truck size={20} />
                     </div>
                     <div>
-                      <p className="font-bold text-sm text-gray-900 uppercase tracking-wide">Envío gratis a todo el país</p>
-                      <p className="text-xs text-gray-500 mt-0.5">Llega a tu casa en 3 a 7 días hábiles por Correo Argentino.</p>
+                      <p className="font-bold text-sm text-green-600 uppercase tracking-wide">Envío gratis a todo el país</p>
+                      <p className="text-xs text-green-600 mt-0.5">Llega a tu casa en 3 a 7 días hábiles.</p>
                     </div>
                   </div>
   
@@ -287,7 +284,7 @@ const ProductPage: React.FC = () => {
                   <div className="mt-8">
                     <div className="flex justify-between items-center mb-3">
                       <p className="text-sm font-bold tracking-wider">TALLE</p>
-                      <button onClick={() => setIsSizeGuideOpen(true)} className="text-sm text-gray-500 hover:text-black underline flex items-center gap-1">
+                      <button onClick={() => navigate('/tallas')} className="text-sm text-gray-500 hover:text-black underline flex items-center gap-1">
                         <Ruler size={14} />
                         Guía de talles
                       </button>

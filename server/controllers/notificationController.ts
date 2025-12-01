@@ -3,14 +3,14 @@ import { db } from '../lib/database.js';
 
 
 export const subscribeToDrop = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { name, email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: 'El email es requerido.' });
+  if (!name || !email) {
+    return res.status(400).json({ message: 'El nombre y el email son requeridos.' });
   }
 
   try {
-    const success = await db.notifications.subscribe(email);
+    const success = await db.notifications.subscribe(name, email);
     if (success) {
       res.status(201).json({ message: '¡Gracias por suscribirte! Te avisaremos.' });
     } else {

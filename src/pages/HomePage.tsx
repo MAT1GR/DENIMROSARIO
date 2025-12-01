@@ -148,12 +148,12 @@ const HomePage: React.FC = () => {
     lastDropSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSubscribe = async (email: string) => {
+  const handleSubscribe = async (name: string, email: string) => {
     try {
       const response = await fetch('/api/notifications/drop', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ name, email }),
       });
       const data = await response.json();
       alert(data.message); // Simple feedback for the user
@@ -212,7 +212,7 @@ const HomePage: React.FC = () => {
 
             {/* AGREGAR ESTO: Mensaje de Envío Gratis sutil pero visible */}
             <p className="mt-6 text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-white/80 animate-pulse-slow">
-              Envíos gratis a toda Argentina 🇦🇷
+              Envíos gratis a toda Argentina
             </p>
 
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
 interface Subscriber {
+  name: string; // Added name
   email: string;
 }
 
@@ -17,6 +18,7 @@ const SubscribersTab: React.FC = () => {
         if (!response.ok) {
           throw new Error('No se pudo obtener la lista de suscriptores.');
         }
+        // The backend now returns { name, email } objects
         const data: Subscriber[] = await response.json();
         setSubscribers(data);
       } catch (err: any) {
@@ -42,6 +44,9 @@ const SubscribersTab: React.FC = () => {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3">
+                  Nombre
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Email
                 </th>
               </tr>
@@ -51,13 +56,16 @@ const SubscribersTab: React.FC = () => {
                 subscribers.map((subscriber, index) => (
                   <tr key={index} className="bg-white border-b hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">
+                      {subscriber.name}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-gray-900">
                       {subscriber.email}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={1} className="px-6 py-4 text-center">
+                  <td colSpan={2} className="px-6 py-4 text-center">
                     No hay suscriptores todavía.
                   </td>
                 </tr>

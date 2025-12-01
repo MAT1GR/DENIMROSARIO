@@ -587,7 +587,7 @@ export const settingsService = {
 };
 
 export const notificationService = {
-  subscribe(email: string): boolean {
+  subscribe(name: string, email: string): boolean {
     const db = getDB();
     const stmt = db.prepare('SELECT id FROM drop_notifications WHERE email = ?');
     const existing = stmt.getAsObject([email]);
@@ -595,13 +595,13 @@ export const notificationService = {
     if (existing) {
       return false;
     }
-    db.run('INSERT INTO drop_notifications (email) VALUES (?)', [email]);
+    db.run('INSERT INTO drop_notifications (name, email) VALUES (?, ?)', [name, email]);
     saveDatabase();
     return true;
   },
 
-  getAll(): { email: string }[] {
+  getAll(): { name: string, email: string }[] {
     const db = getDB();
-    return toObjects(db.exec('SELECT email FROM drop_notifications ORDER BY created_at DESC'));
+    return toObjects(db.exec('SELECT name, email FROM drop_notifications ORDER BY created_at DESC'));
   },
 };

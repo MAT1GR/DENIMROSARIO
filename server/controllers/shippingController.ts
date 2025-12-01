@@ -23,10 +23,10 @@ const provincePostalCodeRanges: { province: string; range: [number, number] }[] 
     { province: 'Jujuy', range: [4600, 4699] },
     { province: 'Catamarca', range: [4700, 4799] },
     { province: 'La Rioja', range: [5300, 5399] },
-    { province: 'San Juan', range: [5400, 5499] }, // Rango específico antes que el de Córdoba
+    { province: 'San Juan', range: [5400, 5499] },
     { province: 'Mendoza', range: [5500, 5699] },
-    { province: 'San Luis', range: [5700, 5899] }, // Rango específico antes que el de Córdoba
-    { province: 'Córdoba', range: [5000, 5999] }, // Rango más amplio al final
+    { province: 'San Luis', range: [5700, 5899] },
+    { province: 'Córdoba', range: [5000, 5999] },
     { province: 'La Pampa', range: [6300, 6399] },
     { province: 'Neuquén', range: [8300, 8399] },
     { province: 'Río Negro', range: [8400, 8599] },
@@ -39,7 +39,6 @@ const getProvinceFromPostalCode = (postalCode: string): string | null => {
     const numericCode = parseInt(postalCode.substring(0, 4), 10);
     if (isNaN(numericCode)) return null;
 
-    // --- CORRECCIÓN: Se itera sobre el array en lugar de un objeto ---
     for (const item of provincePostalCodeRanges) {
         const [min, max] = item.range;
         if (numericCode >= min && numericCode <= max) {
@@ -56,24 +55,21 @@ export const calculateShipping = (req: Request, res: Response) => {
         return res.status(400).json({ message: 'El código postal es requerido.' });
     }
 
-    const province = getProvinceFromPostalCode(postalCode);
     const rosarioPostalCodes = ['2000', 'S2000', 'S2001', 'S2002', 'S2003', 'S2004', 'S2005', 'S2006', 'S2007', 'S2008', 'S2009', 'S2010', 'S2011', 'S2012', 'S2013'];
     
     let shippingOptions: ShippingOption[] = [];
     const mailDeliveryEstimate = '3-7 días hábiles';
 
+    // LÓGICA: Precios a 0, pero diferenciando Rosario
     if (rosarioPostalCodes.includes(postalCode.trim().toUpperCase())) {
         shippingOptions = [
-            // CAMBIO: Costo 0 para Cadete
             { name: 'Cadete (Solo Rosario)', cost: 0, id: 'cadete', deliveryEstimate: '24-48hs' },
-            // CAMBIO: Costo 0 para Correo
             { name: 'Correo Argentino - A Sucursal/Domicilio', cost: 0, id: 'domicilio', deliveryEstimate: mailDeliveryEstimate }
         ];
     } else {
         shippingOptions.push({
             name: 'Correo Argentino - Envío a Domicilio',
-            // CAMBIO: Costo 0 para todo el país
-            cost: 0, 
+            cost: 0, // Gratis para todo el país
             id: 'domicilio',
             deliveryEstimate: mailDeliveryEstimate
         });

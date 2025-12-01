@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
-import { Mail, X } from 'lucide-react';
+import { Mail, X, User } from 'lucide-react';
 import Portal from './Portal'; // Import the Portal component
 
 interface LeadCaptureModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubscribe: (email: string) => void;
+  onSubscribe: (name: string, email: string) => void;
 }
 
 const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({ isOpen, onClose, onSubscribe }) => {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   if (!isOpen) {
@@ -17,8 +18,8 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({ isOpen, onClose, on
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      onSubscribe(email);
+    if (name && email) {
+      onSubscribe(name, email);
     }
   };
 
@@ -52,14 +53,28 @@ const LeadCaptureModal: React.FC<LeadCaptureModalProps> = ({ isOpen, onClose, on
 
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Tu correo electrónico"
-                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 transition-shadow"
-                required
-              />
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Tu nombre"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 transition-shadow"
+                  required
+                />
+              </div>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Tu correo electrónico"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800 transition-shadow"
+                  required
+                />
+              </div>
               <button 
                 type="submit"
                 className="w-full bg-gray-800 text-white font-bold py-3 px-4 rounded-md hover:bg-gray-900 transition-colors"
