@@ -13,28 +13,23 @@ const SizeGuidePage: React.FC = () => {
         ref={contentRef}
         className="container mx-auto px-4 max-w-4xl scroll-animate"
       >
-        <Link
-          to="/tienda"
-          className="inline-flex items-center text-gray-600 hover:text-gray-800 mb-8 transition-colors"
-        >
-          <ArrowLeft className="mr-2" size={20} />
-          Volver a la tienda
-        </Link>
-
         <div className="bg-white rounded-lg shadow-sm p-8 md:p-12">
           <div className="text-center mb-12">
             <div className="bg-gray-800 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
               <Ruler className="text-white" size={32} />
             </div>
-            <h1 className="text-4xl font-bold mb-4">¡Encontrá tu Talle Ideal!</h1>
+            <h1 className="text-4xl font-bold mb-4">¡Encontrá tu Talle Perfecto!</h1>
             {/* Removed the introductory paragraph as requested */}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
             <div>
               <h2 className="text-2xl font-bold mb-6">
-                ¿Cómo tomar tus medidas?
+                Medí tu Jean Favorito
               </h2>
+              <p className="text-gray-600 text-sm mb-6">
+                Para encontrar tu talle ideal, agarrá un jean que te encante cómo te queda, extendelo en una superficie plana y medí lo siguiente:
+              </p>
 
               <div className="space-y-6">
                 <div className="flex gap-4 items-start">
@@ -42,9 +37,9 @@ const SizeGuidePage: React.FC = () => {
                     1
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">Cintura (¡donde usás el jean!)</h3>
+                    <h3 className="font-semibold mb-2">Cintura (A)</h3>
                     <p className="text-gray-600 text-sm">
-                      Medí la parte más estrecha de tu cintura natural. Después, medí dónde te gustaría que la cintura del jean se asiente (si es tiro alto, medio o bajo). ¡Que la cinta ajuste, pero sin apretar!
+                      Medí el contorno de la cintura del jean, de borde a borde. No estires la tela.
                     </p>
                   </div>
                 </div>
@@ -54,9 +49,9 @@ const SizeGuidePage: React.FC = () => {
                     2
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">Cadera (la parte más linda)</h3>
+                    <h3 className="font-semibold mb-2">Tiro Delantero (B)</h3>
                     <p className="text-gray-600 text-sm">
-                      Parate derecha con los pies juntos. Medí alrededor de la parte más generosa de tus caderas y glúteos. Asegurate de que la cinta esté bien paralela al piso.
+                      Medí desde la costura de la entrepierna hasta el botón de la cintura.
                     </p>
                   </div>
                 </div>
@@ -66,21 +61,9 @@ const SizeGuidePage: React.FC = () => {
                     3
                   </div>
                   <div>
-                    <h3 className="font-semibold mb-2">Tiro Delantero (¡clave del calce!)</h3>
+                    <h3 className="font-semibold mb-2">Largo (C)</h3>
                     <p className="text-gray-600 text-sm">
-                      Medí desde la costura de la entrepierna hacia arriba, hasta dónde querés que llegue la parte superior del jean en tu abdomen. ¡Esto hace la diferencia en cómo te queda!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 items-start">
-                  <div className="bg-gray-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
-                    4
-                  </div>
-                  <div>
-                    <h3 className="font-semibold mb-2">Largo de Entrepierna (¡para que no arrastre!)</h3>
-                    <p className="text-gray-600 text-sm">
-                      Medí desde la costura de la entrepierna hasta dónde deseás que termine el ruedo del jean en tu pierna. Podés tomar como referencia un jean tuyo que te quede perfecto.
+                      Medí desde la costura de la entrepierna hasta abajo, a lo largo de la pierna.
                     </p>
                   </div>
                 </div>
@@ -88,7 +71,7 @@ const SizeGuidePage: React.FC = () => {
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold mb-6">Nuestra Tabla de Talles</h2>
+              <h2 className="text-2xl font-bold mb-6">Tabla de Medidas (prenda en plano)</h2>
 
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border border-gray-300">
@@ -98,16 +81,13 @@ const SizeGuidePage: React.FC = () => {
                         Talle
                       </th>
                       <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Cintura
+                        Cintura (A)
                       </th>
                       <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Cadera
+                        Tiro (B)
                       </th>
                       <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Tiro
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Largo Entrepierna
+                        Largo (C)
                       </th>
                     </tr>
                   </thead>
@@ -116,46 +96,41 @@ const SizeGuidePage: React.FC = () => {
                       <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
                         36
                       </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">68-72</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">94-98</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">28-30</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">74-78</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">36 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">28 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">70 cm</td>
                     </tr>
                     <tr className="hover:bg-gray-50">
                       <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
                         38
                       </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">72-76</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">98-102</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">29-31</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">75-79</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">38 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">29 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">71 cm</td>
                     </tr>
                     <tr className="hover:bg-gray-50">
                       <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
                         40
                       </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">76-80</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">102-106</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">30-32</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">76-80</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">40 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">30 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">72 cm</td>
                     </tr>
                     <tr className="hover:bg-gray-50">
                       <td className="border border-gray-300 p-2 text-xs sm:text-sm">
                         42
                       </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">80-84</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">106-110</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">31-33</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">77-81</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">42 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">31 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">73 cm</td>
                     </tr>
                     <tr className="hover:bg-gray-50">
                       <td className="border border-gray-300 p-2 text-xs sm:text-sm">
                         44
                       </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">84-88</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">110-114</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">32-34</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">78-82</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">44 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">32 cm</td>
+                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">74 cm</td>
                     </tr>
                   </tbody>
                 </table>
@@ -164,8 +139,7 @@ const SizeGuidePage: React.FC = () => {
               <div className="mt-6 p-4 bg-gray-100 border border-gray-200 rounded-lg">
                 <p className="text-sm text-gray-700">
                   <Heart className="inline mr-2 text-gray-500" size={16} />
-                  <strong>¡Dato importante!:</strong> Si tus medidas están entre dos tallas,
-                  siempre te recomendamos elegir la más grande para mayor comodidad, ¡especialmente en jeans sin mucho stretch!
+                  <strong>¡Dato importante!:</strong> Estas son medidas de la prenda, no de tu cuerpo. Comparalas con un jean que ya tengas y te quede perfecto.
                 </p>
               </div>
             </div>

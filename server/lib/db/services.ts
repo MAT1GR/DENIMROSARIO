@@ -28,26 +28,43 @@ const toObjects = (res: QueryExecResult[] | undefined): any[] => {
   });
 };
 
-const parseProduct = (row: any): Product => ({
-  id: String(row.id),
-  name: row.name,
-  price: row.price,
-  images: JSON.parse(row.images),
-  video: row.video,
-  category: row.category,
-  description: row.description,
-  material: row.material,
-  rise: row.rise,
-  rise_cm: row.rise_cm,
-  fit: row.fit,
-  waist_flat: row.waist_flat,
-  isWaistStretchy: Boolean(row.is_waist_stretchy),
-  length: row.length,
-  sizes: JSON.parse(row.sizes),
-  isNew: Boolean(row.is_new),
-  isBestSeller: Boolean(row.is_best_seller),
-  isActive: Boolean(row.is_active),
-});
+const parseProduct = (row: any): Product => {
+  let faqs = [];
+  try {
+    if (row.faqs) {
+      const parsedFaqs = JSON.parse(row.faqs);
+      if (Array.isArray(parsedFaqs)) {
+        faqs = parsedFaqs;
+      }
+    }
+  } catch (e) {
+    console.error(`Failed to parse FAQs for product ID ${row.id}:`, e);
+    // Defaults to empty array if parsing fails
+  }
+
+  return {
+    id: String(row.id),
+    name: row.name,
+    price: row.price,
+    images: JSON.parse(row.images),
+    video: row.video,
+    category: row.category,
+    description: row.description,
+    material: row.material,
+    rise: row.rise,
+    rise_cm: row.rise_cm,
+    fit: row.fit,
+    waist_flat: row.waist_flat,
+    isWaistStretchy: Boolean(row.is_waist_stretchy),
+    length: row.length,
+    sizes: JSON.parse(row.sizes),
+    isNew: Boolean(row.is_new),
+    isBestSeller: Boolean(row.is_best_seller),
+    isActive: Boolean(row.is_active),
+    faqs: faqs,
+  };
+};
+
 
 const parseCategory = (row: any): Category => ({
   id: row.id,
@@ -126,15 +143,23 @@ export const authService = {
 };
 
 export const productService = {
-  getAll(filters: { category?: string; sortBy?: string; page?: number; limit?: number }) {
+  getAll(filters: { category?: string; size?: string; minPrice?: number; maxPrice?: number; sortBy?: string; page?: number; limit?: number }) {
     const db = getDB();
-    const { category, sortBy, page = 1, limit = 9 } = filters;
+    const { category, size, minPrice, maxPrice, sortBy, page = 1, limit = 9 } = filters;
     
     let whereClauses = ["is_active = 1"];
     const params: (string | number)[] = [];
     if (category) {
       whereClauses.push("category = ?");
       params.push(category);
+    }
+    if (minPrice) {
+      whereClauses.push("price >= ?");
+      params.push(minPrice);
+    }
+    if (maxPrice) {
+      whereClauses.push("price <= ?");
+      params.push(maxPrice);
     }
 
     const where = `WHERE ${whereClauses.join(" AND ")}`;
@@ -143,19 +168,24 @@ export const productService = {
     if (sortBy === "price-desc") orderBy = "ORDER BY price DESC";
     if (sortBy === "popular") orderBy = "ORDER BY is_best_seller DESC, id DESC";
 
-    const offset = (page - 1) * limit;
-    
-    const productsQuery = `SELECT * FROM products ${where} ${orderBy} LIMIT ? OFFSET ?`;
-    const products = toObjects(db.exec(productsQuery, [...params, limit, offset])).map(parseProduct);
+    // Fetch all products matching WHERE clauses, without pagination for now
+    const allProductsQuery = `SELECT * FROM products ${where} ${orderBy}`;
+    const allProducts = toObjects(db.exec(allProductsQuery, params)).map(parseProduct);
 
-    const countQuery = `SELECT COUNT(*) as total FROM products ${where}`;
-    const totalResult = toObjects(db.exec(countQuery, params))[0] as { total: number };
+    // Filter by size in application code
+    const filteredBySize = size 
+      ? allProducts.filter(p => p.sizes[size] && p.sizes[size].available && p.sizes[size].stock > 0)
+      : allProducts;
+
+    // Apply pagination manually
+    const offset = (page - 1) * limit;
+    const paginatedProducts = filteredBySize.slice(offset, offset + limit);
     
     return {
-      products,
-      totalPages: Math.ceil(totalResult.total / limit),
+      products: paginatedProducts,
+      totalPages: Math.ceil(filteredBySize.length / limit),
       currentPage: page,
-      totalProducts: totalResult.total,
+      totalProducts: filteredBySize.length,
     };
   },
 
@@ -208,7 +238,7 @@ export const productService = {
   create(product: Omit<Product, 'id' | 'isActive'>): number {
     const db = getDB();
     const stmt = db.prepare(
-      'INSERT INTO products (name, price, images, video, category, description, material, rise, rise_cm, fit, waist_flat, is_waist_stretchy, length, sizes, is_new, is_best_seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO products (name, price, images, video, category, description, material, rise, rise_cm, fit, waist_flat, is_waist_stretchy, length, sizes, is_new, is_best_seller, faqs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     stmt.run([
       product.name,
@@ -226,7 +256,8 @@ export const productService = {
       product.length ?? null,
       JSON.stringify(product.sizes),
       Number(product.isNew),
-      Number(product.isBestSeller)
+      Number(product.isBestSeller),
+      product.faqs ? JSON.stringify(product.faqs) : '[]' // Store FAQs as JSON string
     ]);
     stmt.free();
     const id = toObjects(db.exec("SELECT last_insert_rowid() as id"))[0].id;
@@ -237,7 +268,7 @@ export const productService = {
   update(productId: string, product: Partial<Product>): boolean {
     const db = getDB();
     db.run(
-      'UPDATE products SET name = COALESCE(?, name), price = COALESCE(?, price), images = COALESCE(?, images), video = COALESCE(?, video), category = COALESCE(?, category), description = COALESCE(?, description), material = COALESCE(?, material), rise = COALESCE(?, rise), rise_cm = COALESCE(?, rise_cm), fit = COALESCE(?, fit), waist_flat = COALESCE(?, waist_flat), is_waist_stretchy = COALESCE(?, is_waist_stretchy), length = COALESCE(?, length), sizes = COALESCE(?, sizes), is_new = COALESCE(?, is_new), is_best_seller = COALESCE(?, is_best_seller), is_active = COALESCE(?, is_active) WHERE id = ?',
+      'UPDATE products SET name = COALESCE(?, name), price = COALESCE(?, price), images = COALESCE(?, images), video = COALESCE(?, video), category = COALESCE(?, category), description = COALESCE(?, description), material = COALESCE(?, material), rise = COALESCE(?, rise), rise_cm = COALESCE(?, rise_cm), fit = COALESCE(?, fit), waist_flat = COALESCE(?, waist_flat), is_waist_stretchy = COALESCE(?, is_waist_stretchy), length = COALESCE(?, length), sizes = COALESCE(?, sizes), is_new = COALESCE(?, is_new), is_best_seller = COALESCE(?, is_best_seller), is_active = COALESCE(?, is_active), faqs = COALESCE(?, faqs) WHERE id = ?',
       [
         product.name ?? null,
         product.price ?? null,
@@ -256,6 +287,7 @@ export const productService = {
         product.isNew !== undefined ? Number(product.isNew) : null,
         product.isBestSeller !== undefined ? Number(product.isBestSeller) : null,
         product.isActive !== undefined ? Number(product.isActive) : null,
+        product.faqs ? JSON.stringify(product.faqs) : null, // Store FAQs as JSON string
         productId
       ]
     );

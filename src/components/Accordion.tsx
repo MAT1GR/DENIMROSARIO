@@ -3,11 +3,11 @@ import { ChevronDown } from 'lucide-react';
 
 interface AccordionProps {
   title: string;
-  children: React.ReactNode;
+  content: React.ReactNode;
   defaultOpen?: boolean;
 }
 
-const Accordion: React.FC<AccordionProps> = ({ title, children, defaultOpen = false }) => {
+const Accordion: React.FC<AccordionProps> = ({ title, content, defaultOpen = false }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
@@ -28,7 +28,7 @@ const Accordion: React.FC<AccordionProps> = ({ title, children, defaultOpen = fa
       >
         <div className="overflow-hidden">
           <div className="prose prose-sm text-brand-gray pt-4">
-            {children}
+            {content}
           </div>
         </div>
       </div>

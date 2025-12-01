@@ -4,6 +4,7 @@ interface ShippingOption {
     name: string;
     cost: number;
     id: string;
+    deliveryEstimate: string;
 }
 
 // --- CORRECCIÓN: Se cambia la estructura a un array para garantizar el orden de búsqueda ---
@@ -58,7 +59,7 @@ export const calculateShipping = (req: Request, res: Response) => {
     // Special handling for free shipping postal code
     if (postalCode === "3413981584") {
         return res.json({
-            options: [{ name: 'Envío Gratis', cost: 0, id: 'free_shipping' }]
+            options: [{ name: 'Envío Gratis', cost: 0, id: 'free_shipping', deliveryEstimate: 'N/A' }]
         });
     }
 
@@ -66,11 +67,12 @@ export const calculateShipping = (req: Request, res: Response) => {
     const rosarioPostalCodes = ['2000', 'S2000', 'S2001', 'S2002', 'S2003', 'S2004', 'S2005', 'S2006', 'S2007', 'S2008', 'S2009', 'S2010', 'S2011', 'S2012', 'S2013'];
     
     let shippingOptions: ShippingOption[] = [];
+    const mailDeliveryEstimate = '3-7 días hábiles';
 
     if (rosarioPostalCodes.includes(postalCode.trim().toUpperCase())) {
         shippingOptions = [
-            { name: 'Cadete (Solo Rosario)', cost: 4500, id: 'cadete' },
-            { name: 'Correo Argentino - Envío a Domicilio', cost: 7000, id: 'domicilio' }
+            { name: 'Cadete (Solo Rosario)', cost: 4500, id: 'cadete', deliveryEstimate: '2-4 días hábiles' },
+            { name: 'Correo Argentino - Envío a Domicilio', cost: 7000, id: 'domicilio', deliveryEstimate: mailDeliveryEstimate }
         ];
     } else {
         let shippingCost = 8679; // Precio por defecto para Zona 2
@@ -89,7 +91,8 @@ export const calculateShipping = (req: Request, res: Response) => {
         shippingOptions.push({
             name: 'Correo Argentino - Envío a Domicilio',
             cost: shippingCost,
-            id: 'domicilio'
+            id: 'domicilio',
+            deliveryEstimate: mailDeliveryEstimate
         });
     }
 

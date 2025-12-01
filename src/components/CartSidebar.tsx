@@ -91,8 +91,22 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                       </button>
                     </div>
                     <div className="flex justify-between items-center mt-4">
-                      <div className="flex items-center">
-                        <p className="text-sm text-gray-500">Cantidad: {item.quantity}</p>
+                      <div className="flex items-center border border-gray-300 rounded-md">
+                        <button 
+                          onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          className="px-2 py-1 disabled:opacity-50"
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="px-3 text-sm font-medium">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
+                          disabled={item.quantity >= item.product.sizes[item.size].stock}
+                          className="px-2 py-1 disabled:opacity-50"
+                        >
+                          <Plus size={14} />
+                        </button>
                       </div>
                       <p className="font-bold text-lg">
                         $
@@ -108,6 +122,28 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
 
             {/* Footer Section (Fixed at the bottom) */}
             <div className="p-6 border-t bg-white">
+              
+              {/* Free Shipping Incentive */}
+              {(total > 0) && (
+                <div className="text-center text-sm mb-4">
+                  {total < 25000 ? (
+                    <p>
+                      ¡Te faltan solo <span className="font-bold">${(25000 - total).toLocaleString('es-AR')}</span> para el envío gratis!
+                    </p>
+                  ) : (
+                    <p className="font-bold text-green-600">
+                      ¡Felicitaciones! Tenés envío gratis.
+                    </p>
+                  )}
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                    <div 
+                      className="bg-black h-2.5 rounded-full" 
+                      style={{ width: `${Math.min((total / 25000) * 100, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-between items-center text-lg">
                 <span className="font-bold">Subtotal</span>
                 <span className="font-bold">

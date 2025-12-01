@@ -22,6 +22,7 @@ export interface Product {
   isNew: boolean;
   isBestSeller: boolean;
   isActive: boolean;
+  faqs?: { question: string; answer: string }[];
 }
 
 export interface CartItem {

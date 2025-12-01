@@ -3,7 +3,7 @@ import WhatsAppLogo from '../assets/whatsapp-logo.png'; // Added import for cust
 
 const WhatsAppButton: React.FC<{ message?: string }> = ({ message: propMessage }) => {
   const phoneNumber = '5493541374915'; 
-  const defaultMessage = 'Hola tengo una duda sobre el talle';
+  const defaultMessage = '';
   const finalMessage = propMessage || defaultMessage;
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(finalMessage)}`;

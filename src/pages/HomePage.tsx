@@ -9,28 +9,39 @@ import WhatsAppButton from "../components/WhatsAppButton";
 import homeImage from '../assets/home.webp'; // Import the image
 import CountdownTimer from "../components/CountdownTimer"; // Importado
 import { Helmet } from 'react-helmet-async';
+import Accordion from "../components/Accordion";
+import LeadCaptureModal from '../components/LeadCaptureModal';
+import InstagramFeed from '../components/InstagramFeed';
 
 const HomePage: React.FC = () => {
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showWhatsAppButton, setShowWhatsAppButton] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasModalBeenShown, setHasModalBeenShown] = useState(false);
   // Hardcoded testimonials data
   const hardcodedTestimonials = [
     {
       id: 1,
       customerName: '@ornellamagi',
       content: 'Holis, ya retiré las cositas. Enamorada del jean realmente 🙏🏻',
+      rating: 5,
+      productName: 'Jean',
     },
     {
       id: 2,
       customerName: '@alaniisleo',
-      content: 'Gracias bella! Me encanto el jean blanco 😍'
+      content: 'Gracias bella! Me encanto el jean blanco 😍',
+      rating: 5,
+      productName: 'Jean Blanco',
     },
     {
       id: 3,
       customerName: '@_leimai.',
       content: 'Ya me llego, esta muy bueno el jean. Gracias.',
+      rating: 5,
+      productName: 'Jean',
     },
   ];
 
@@ -89,6 +100,44 @@ const HomePage: React.FC = () => {
     };
   }, [lastDropSectionRef]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (hasModalBeenShown) {
+        window.removeEventListener('scroll', handleScroll);
+        return;
+      }
+
+      const scrollPercentage = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      
+      if (scrollPercentage > 70) {
+        setIsModalOpen(true);
+        setHasModalBeenShown(true);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [hasModalBeenShown]);
+
+  // Effect to prevent background scrolling when modal is open
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    // Cleanup function to ensure scroll is re-enabled when component unmounts
+    return () => {
+      document.body.style.overflow = 'unset'; 
+    };
+  }, [isModalOpen]);
+
+
+
+
   const renderSkeletons = () => (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {[...Array(4)].map((_, i) => <SkeletonCard key={i} />)}
@@ -99,6 +148,24 @@ const HomePage: React.FC = () => {
     lastDropSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const handleSubscribe = async (email: string) => {
+    try {
+      const response = await fetch('/api/notifications/drop', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      alert(data.message); // Simple feedback for the user
+      if(response.ok) {
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error("Subscription fetch error:", error);
+      alert("Hubo un error al procesar la suscripción. Por favor, intentá de nuevo.");
+    }
+  };
+
   return (
     <>
       <Helmet>
@@ -106,14 +173,21 @@ const HomePage: React.FC = () => {
         <meta name="description" content="Encontrá los mejores jeans de calce perfecto en Rosario. Envíos a todo el país. Calidad premium sin seguir modas rápidas." />
         <meta name="keywords" content="jeans rosario, denim, ropa mujer, pantalones tiro alto" />
       </Helmet>
-      <div className="bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white">
+
+      <LeadCaptureModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubscribe={handleSubscribe}
+      />
+
+      <div className={`bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white transition-all duration-300 ${isModalOpen ? 'blur-sm' : ''}`}>
                     <section
                       className="min-h-[70vh] lg:min-h-screen relative flex flex-col items-center justify-center text-center px-4 py-20 lg:py-32"
                     >
                       <img
                         src={homeImage}
                         alt="Modelo vistiendo jeans de Denim Rosario"
-                        fetchpriority="high"
+                        fetchPriority="high"
                         className="absolute top-0 left-0 w-full h-full object-cover"
                       />
                       <div className="absolute top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.45)]" />
@@ -228,6 +302,25 @@ const HomePage: React.FC = () => {
             </p>
           </div>
         </section>
+
+        {/* FAQ Section */}
+        <section className="py-16 lg:py-24 bg-neutral-100 text-black">
+          <div className="container mx-auto px-4">
+            <h2 className="text-3xl lg:text-4xl font-bold tracking-tight uppercase text-center mb-12">
+              Preguntas Frecuentes
+            </h2>
+            <div className="max-w-3xl mx-auto">
+              <Accordion title="¿Cuáles son los métodos de pago?" content="Aceptamos tarjetas de crédito, débito y efectivo a través de Mercado Pago." />
+              <Accordion title="¿Hacen envíos a todo el país?" content="Sí, hacemos envíos a todo el país a través de Correo Argentino a domicilio o a sucursal." />
+              <Accordion title="¿Cuánto tiempo tarda en llegar mi pedido?" content="Una vez despachado, el tiempo de entrega estimado es de 3 a 7 días hábiles, dependiendo de tu ubicación." />
+              <Accordion title="¿Puedo realizar una devolución?" content="Sí, podés consultar nuestra política de devoluciones en la sección 'Devoluciónes' de nuestra web." />
+              <Accordion title="¿Cómo elijo mi talle correctamente?" content="Te recomendamos visitar nuestra 'Guía de Talles' para aprender a tomar tus medidas y encontrar el calce perfecto." />
+              <Accordion title="¿Qué hago si mi pedido llega dañado o incorrecto?" content="En caso de recibir un producto dañado o diferente al solicitado, por favor contactanos de inmediato con fotos y el número de tu pedido para que podamos solucionarlo." />
+            </div>
+          </div>
+        </section>
+
+        <InstagramFeed />
 
         {/* Size Guide Section */}
         <section className="py-16 lg:py-24 bg-neutral-100 text-black">

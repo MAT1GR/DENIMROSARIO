@@ -51,7 +51,7 @@ const CheckoutPage: React.FC = () => {
   const totalWithDiscount = total * 0.9;
 
   useEffect(() => {
-    if (cartItems.length === 0) {
+    if (cartItems.length === 0) { 
       navigate("/tienda");
     }
   }, [cartItems, navigate]);

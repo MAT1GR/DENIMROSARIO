@@ -6,21 +6,21 @@ interface SizeGuideModalProps {
 }
 
 const sizeData = [
-  { size: "36", waist: "70-74 cm", hip: "96-100 cm" },
-  { size: "38", waist: "74-78 cm", hip: "100-104 cm" },
-  { size: "40", waist: "78-82 cm", hip: "104-108 cm" },
-  { size: "42", waist: "82-86 cm", hip: "108-112 cm" },
-  { size: "44", waist: "86-90 cm", hip: "112-116 cm" },
+  { size: "36", waist: "36 cm", rise: "28 cm" },
+  { size: "38", waist: "38 cm", rise: "29 cm" },
+  { size: "40", waist: "40 cm", rise: "30 cm" },
+  { size: "42", waist: "42 cm", rise: "31 cm" },
+  { size: "44", waist: "44 cm", rise: "32 cm" },
 ];
 
 const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ onClose }) => {
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 animate-fade-in"
+      className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-lg p-8 max-w-lg w-full relative transform animate-scale-in"
+        className="bg-white rounded-lg p-8 max-w-lg w-full relative"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -30,13 +30,12 @@ const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ onClose }) => {
           <X size={24} />
         </button>
         <div className="flex items-center gap-3 mb-6">
-          <Ruler size={24} className="text-brand-pink" />
+          <Ruler size={24} />
           <h3 className="text-2xl font-bold">Guía de Talles</h3>
         </div>
 
         <p className="text-gray-600 mb-6 text-sm">
-          Te recomendamos medir un jean que te quede bien y compararlo con
-          nuestra tabla. Las medidas son aproximadas y pueden variar levemente.
+          Para encontrar tu talle, te recomendamos medir la <strong>cintura</strong> y el <strong>tiro</strong> de un jean que te quede bien (apoyado en una superficie plana) y compararlo con nuestra tabla.
         </p>
 
         <div className="overflow-x-auto">
@@ -44,8 +43,8 @@ const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ onClose }) => {
             <thead>
               <tr className="bg-gray-50">
                 <th className="p-3 font-semibold text-sm border-b">Talle</th>
-                <th className="p-3 font-semibold text-sm border-b">Cintura</th>
-                <th className="p-3 font-semibold text-sm border-b">Cadera</th>
+                <th className="p-3 font-semibold text-sm border-b">Cintura (Prenda Plana)</th>
+                <th className="p-3 font-semibold text-sm border-b">Tiro Delantero</th>
               </tr>
             </thead>
             <tbody>
@@ -58,7 +57,7 @@ const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ onClose }) => {
                     {row.waist}
                   </td>
                   <td className="p-3 border-b border-gray-200 text-gray-700">
-                    {row.hip}
+                    {row.rise}
                   </td>
                 </tr>
               ))}
@@ -67,8 +66,7 @@ const SizeGuideModal: React.FC<SizeGuideModalProps> = ({ onClose }) => {
         </div>
 
         <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
-          <b>Tip:</b> Si estás entre dos talles, te recomendamos elegir el más
-          grande para un calce más cómodo y relajado.
+          <b>Tip:</b> La medida más importante es la cintura. Si estás entre dos talles, te recomendamos elegir el más grande.
         </div>
       </div>
     </div>

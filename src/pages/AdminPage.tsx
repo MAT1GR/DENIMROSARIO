@@ -7,8 +7,9 @@ import { CategoriesTab } from '../components/admin/CategoriesTab';
 import { OrdersTab } from '../components/admin/OrdersTab';
 import { CustomersTab } from '../components/admin/CustomersTab';
 import { SettingsTab } from '../components/admin/SettingsTab';
+import SubscribersTab from '../components/admin/SubscribersTab'; // Import new tab
 import { 
-  BarChart3, Package, Tag, ShoppingCart, Users, Settings, LogOut 
+  BarChart3, Package, Tag, ShoppingCart, Users, Settings, LogOut, Mail // Import Mail icon
 } from 'lucide-react';
 
 const AdminPage: React.FC = () => {
@@ -25,10 +26,12 @@ const AdminPage: React.FC = () => {
     { id: 'categories', label: 'Categorías', icon: Tag, component: <CategoriesTab /> },
     { id: 'orders', label: 'Pedidos', icon: ShoppingCart, component: <OrdersTab /> },
     { id: 'customers', label: 'Clientes', icon: Users, component: <CustomersTab /> },
+    { id: 'subscribers', label: 'Suscriptores', icon: Mail, component: <SubscribersTab /> },
     { id: 'settings', label: 'Configuración', icon: Settings, component: <SettingsTab /> }
   ];
 
   const activeComponent = tabs.find(tab => tab.id === activeTab)?.component;
+
 
   return (
     <div className="min-h-screen bg-gray-50">

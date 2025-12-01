@@ -35,6 +35,7 @@ export function initializeSchema() {
       is_new BOOLEAN DEFAULT 0,
       is_best_seller BOOLEAN DEFAULT 0,
       is_active BOOLEAN DEFAULT 1,
+      faqs TEXT DEFAULT '[]',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -97,6 +98,15 @@ export function initializeSchema() {
   `;
   
   db.exec(createTablesSQL);
+
+  // --- Add faqs column to products table if it doesn't exist ---
+  try {
+    db.exec("ALTER TABLE products ADD COLUMN faqs TEXT DEFAULT '[]'");
+    console.log("[DB] 'faqs' column added to 'products' table.");
+  } catch (e) {
+    // This will likely fail if the column already exists, which is fine.
+    // console.log("[DB] 'faqs' column likely already exists.");
+  }
 
   // Seeding initial data
   seedInitialData();

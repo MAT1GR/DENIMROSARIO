@@ -44,6 +44,9 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
 
   const [sizeRows, setSizeRows] = useState<SizeRow[]>(initialSizes);
   
+  const defaultFaq = { question: '¿Cómo debo lavarlo?', answer: 'Recomendamos lavar del revés, con agua fría y evitar el uso de secadoras para mantener la forma y el color.' };
+  const [faqs, setFaqs] = useState(product?.faqs && product.faqs.length > 0 ? product.faqs : (product ? [] : [defaultFaq]));
+
   const getCorrectImageUrl = (path: string) => {
     if (!path) return '';
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
@@ -99,6 +102,20 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
     setSizeRows(sizeRows.filter((_, i) => i !== index));
   };
   
+  const handleFaqChange = (index: number, field: 'question' | 'answer', value: string) => {
+    const newFaqs = [...faqs];
+    newFaqs[index][field] = value;
+    setFaqs(newFaqs);
+  };
+
+  const addFaq = () => {
+    setFaqs([...faqs, { question: '', answer: '' }]);
+  };
+
+  const removeFaq = (index: number) => {
+    setFaqs(faqs.filter((_, i) => i !== index));
+  };
+
   const handleNewImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       setAllImages(prev => [...prev, ...Array.from(e.target.files!)]);
@@ -146,6 +163,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
       return acc;
     }, {} as Omit<Product['sizes'], 'measurements'>);
     data.append('sizes', JSON.stringify(sizesAsObject));
+    data.append('faqs', JSON.stringify(faqs));
 
     const existingImagesPaths = allImages.filter(img => typeof img === 'string') as string[];
     const newImageFiles = allImages.filter(img => typeof img !== 'string') as File[];
@@ -268,6 +286,42 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
                             <Plus size={16}/> Añadir Talle
                         </button>
                     </div>
+                </div>
+              </div>
+
+              {/* FAQs Section */}
+              <div className="p-6 bg-white border rounded-lg shadow-sm">
+                <h3 className="text-xl font-semibold text-gray-800 mb-6">Preguntas Frecuentes (Opcional)</h3>
+                <div className="space-y-4">
+                  {faqs.map((faq, index) => (
+                    <div key={index} className="p-4 border rounded-md bg-gray-50 relative">
+                      <div className="space-y-2">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Pregunta</label>
+                          <input 
+                            value={faq.question} 
+                            onChange={(e) => handleFaqChange(index, 'question', e.target.value)} 
+                            placeholder="Ej: ¿Este jean es elastizado?"
+                            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1">Respuesta</label>
+                          <textarea 
+                            value={faq.answer} 
+                            onChange={(e) => handleFaqChange(index, 'answer', e.target.value)} 
+                            placeholder="Ej: Sí, este modelo contiene un 2% de elastano..."
+                            className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                            rows={2}
+                          />
+                        </div>
+                      </div>
+                      <button type="button" onClick={() => removeFaq(index)} className="absolute -top-2 -right-2 bg-red-600 text-white rounded-full p-1"><Trash2 size={12}/></button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={addFaq} className="mt-2 flex items-center gap-2 text-sm font-semibold text-[#D8A7B1] hover:text-[#b98d97] px-3 py-1.5 rounded-md border border-dashed border-[#D8A7B1]/50">
+                      <Plus size={16}/> Añadir Pregunta
+                  </button>
                 </div>
               </div>
             </div>

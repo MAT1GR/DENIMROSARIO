@@ -21,3 +21,16 @@ export const subscribeToDrop = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error al procesar la suscripción.' });
   }
 };
+
+export const getSubscribers = async (req: Request, res: Response) => {
+  // SECURITY NOTE: This endpoint is not protected. The existing application architecture
+  // does not seem to have a backend authentication middleware. Access control is handled
+  // by obscurity (only admin panel calls this). This should be improved in the future.
+  try {
+      const subscribers = await db.notifications.getAll();
+      res.json(subscribers);
+  } catch (error) {
+      console.error("Error fetching subscribers:", error);
+      res.status(500).json({ message: 'Error al obtener los suscriptores' });
+  }
+};

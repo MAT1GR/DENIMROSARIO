@@ -13,9 +13,13 @@ const ShopPage: React.FC = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
 
   const [filters, setFilters] = useState({
     category: '',
+    size: '',
+    minPrice: '',
+    maxPrice: '',
     sortBy: 'newest' as SortOption,
     page: 1,
   });
@@ -31,6 +35,15 @@ const ShopPage: React.FC = () => {
       });
       if (filters.category) {
         params.append('category', filters.category);
+      }
+      if (filters.size) {
+        params.append('size', filters.size);
+      }
+      if (filters.minPrice) {
+        params.append('minPrice', filters.minPrice);
+      }
+      if (filters.maxPrice) {
+        params.append('maxPrice', filters.maxPrice);
       }
 
       try {
@@ -50,11 +63,27 @@ const ShopPage: React.FC = () => {
     fetchProducts();
   }, [filters]);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setFilters(prev => ({
+        ...prev,
+        minPrice: priceRange.min,
+        maxPrice: priceRange.max,
+        page: 1,
+      }));
+    }, 500); // 500ms debounce
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [priceRange]);
+
   const handleFilterChange = (key: keyof typeof filters, value: string | number) => {
     setFilters(prev => ({ ...prev, [key]: value, page: 1 }));
   };
 
   const categories = ['Mom Jeans', 'Wide Leg', 'Flare', 'Straight'];
+  const STANDARD_SIZES = ["34", "36", "38", "40", "42", "44"];
 
   return (
     <div className="min-h-screen bg-white py-8">
@@ -73,6 +102,37 @@ const ShopPage: React.FC = () => {
                     {categories.map(category => (
                       <button key={category} onClick={() => handleFilterChange('category', category)} className={`w-full text-left text-sm p-2 rounded ${filters.category === category ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-50'}`}>{category}</button>
                     ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">TALLE</h3>
+                  <div className="flex flex-wrap gap-2">
+                    <button onClick={() => handleFilterChange('size', '')} className={`px-3 py-1 text-sm border rounded-md ${!filters.size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-black'}`}>Todos</button>
+                    {STANDARD_SIZES.map(size => (
+                      <button key={size} onClick={() => handleFilterChange('size', size)} className={`px-3 py-1 text-sm border rounded-md ${filters.size === size ? 'bg-black text-white border-black' : 'border-gray-300 hover:border-black'}`}>{size}</button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium mb-3">PRECIO</h3>
+                  <div className="flex items-center gap-2">
+                    <input 
+                      type="number" 
+                      placeholder="Min" 
+                      value={priceRange.min}
+                      onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    />
+                    <span>-</span>
+                    <input 
+                      type="number" 
+                      placeholder="Max" 
+                      value={priceRange.max}
+                      onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                      className="w-full p-2 border border-gray-300 rounded-md text-sm"
+                    />
                   </div>
                 </div>
               </div>

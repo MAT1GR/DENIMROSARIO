@@ -51,6 +51,7 @@ import {
   Ruler,
   ShoppingCart,
   Loader2,
+  Star,
 } from "lucide-react";
 import { Product } from "../../server/types";
 import { useCart } from "../hooks/useCart";
@@ -58,12 +59,16 @@ import ProductMediaGallery from "../components/ProductMediaGallery";
 import { useScrollAnimation } from "../hooks/useScrollAnimation";
 import ProductCard from "../components/ProductCard";
 import { Helmet } from 'react-helmet-async';
+import Accordion from '../components/Accordion'; // Import the Accordion component
+import SizeGuideModal from '../components/SizeGuideModal';
 
 interface ShippingOption {
   id: string;
   name: string;
   cost: number;
+  deliveryEstimate: string;
 }
+
 
 const Breadcrumbs: React.FC<{ product: Product }> = ({ product }) => (
   <nav className="text-sm text-gris-oscuro/70 mb-4">
@@ -93,6 +98,7 @@ const ProductPage: React.FC = () => {
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [showReadMore, setShowReadMore] = useState(false);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
     const descriptionRef = useRef<HTMLDivElement>(null);
     const relatedRef = useScrollAnimation<HTMLElement>();
     const STANDARD_SIZES = ["34", "36", "38", "40", "42", "44"];
@@ -172,11 +178,35 @@ const ProductPage: React.FC = () => {
           window.removeEventListener('resize', checkDescriptionOverflow);
         };
       }, [product?.description]);    
+  
       const handleAddToCart = () => {
       if (!product || !selectedSize) return;
       addToCart(product, selectedSize, 1);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 2000);
+    };
+
+    const handleCalculateShipping = async () => {
+      if (!postalCode) return;
+      setIsCalculatingShipping(true);
+      setShippingOptions([]);
+      try {
+        const res = await fetch('/api/shipping/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ postalCode }),
+        });
+        if (!res.ok) {
+          throw new Error('No se pudo calcular el envío.');
+        }
+        const data = await res.json();
+        setShippingOptions(data.options || []);
+      } catch (err) {
+        console.error("Shipping calculation error:", err);
+        // Maybe set an error state here to show in the UI
+      } finally {
+        setIsCalculatingShipping(false);
+      }
     };
   
     if (isLoading)
@@ -198,6 +228,7 @@ const ProductPage: React.FC = () => {
   
     return (
       <>
+        {isSizeGuideOpen && <SizeGuideModal onClose={() => setIsSizeGuideOpen(false)} />}
         <Helmet>
           <title>{product.name} | Denim Rosario</title>
           <meta name="description" content={`Comprá ${product.name} en Denim Rosario. ${product.description.substring(0, 150)}...`} />
@@ -241,10 +272,51 @@ const ProductPage: React.FC = () => {
   
                   <p className="text-3xl mt-4">${product.price}</p>
   
+                  {/* Shipping Calculator */}
+                  <div className="my-6 p-4 border border-gray-200 rounded-lg">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Truck size={20} className="text-gray-600" />
+                      <p className="font-bold text-md">Calculá el costo de envío</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <input 
+                        type="text"
+                        value={postalCode}
+                        onChange={(e) => setPostalCode(e.target.value)}
+                        placeholder="Tu código postal"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
+                      />
+                      <button 
+                        onClick={handleCalculateShipping}
+                        disabled={isCalculatingShipping || !postalCode}
+                        className="bg-gray-800 text-white font-bold px-5 py-2 rounded-md hover:bg-gray-900 disabled:bg-gray-400 flex items-center justify-center"
+                      >
+                        {isCalculatingShipping ? <Loader2 size={20} className="animate-spin" /> : "Calcular"}
+                      </button>
+                    </div>
+                    {shippingOptions.length > 0 && (
+                      <div className="mt-4 space-y-3">
+                        {shippingOptions.map(option => (
+                          <div key={option.id} className="flex justify-between items-start text-sm">
+                            <div>
+                              <span>{option.name}</span>
+                              <p className="text-xs text-gray-500">{option.deliveryEstimate}</p>
+                            </div>
+                            <span className="font-bold">${option.cost}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+  
                   {/* TALLE */}
                   <div className="mt-8">
                     <div className="flex justify-between items-center mb-3">
                       <p className="text-sm font-bold tracking-wider">TALLE</p>
+                      <button onClick={() => setIsSizeGuideOpen(true)} className="text-sm text-gray-500 hover:text-black underline flex items-center gap-1">
+                        <Ruler size={14} />
+                        Guía de talles
+                      </button>
                     </div>
   
                     <div className="flex flex-wrap gap-2">
@@ -270,6 +342,11 @@ const ProductPage: React.FC = () => {
                         );
                       })}
                     </div>
+                    {selectedSize && isInStock && (
+                      <p className="mt-3 text-red-600 font-medium text-sm animate-pulse">
+                        ¡Última unidad disponible!
+                      </p>
+                    )}
                   </div>
   
                                                   {/* BOTONES DE COMPRA */}
@@ -360,6 +437,18 @@ const ProductPage: React.FC = () => {
                   
                   {/* MEDIDAS */}
                   <ProductMeasurements product={product} />
+
+                  {/* PREGUNTAS FRECUENTES (Product Specific) */}
+                  {Array.isArray(product.faqs) && product.faqs.length > 0 && (
+                    <div className="py-8 border-t border-gray-200 mt-6">
+                      <h3 className="text-xl font-bold mb-4">Preguntas Frecuentes</h3>
+                      <div className="space-y-4">
+                        {product.faqs.map((faq, index) => (
+                          <Accordion key={index} title={faq.question} content={faq.answer} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

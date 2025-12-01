@@ -25,7 +25,6 @@ const MeasurementsTable: React.FC<{ measurements: Product['measurements'] }> = (
       <p className="font-bold mb-1">Medidas en plano:</p>
       <ul className="list-disc list-inside pl-2">
         {measurements.cintura && <li>Cintura (de lado a lado): {measurements.cintura}cm</li>}
-        {measurements.cadera && <li>Cadera: {measurements.cadera}cm</li>}
         {measurements.largo && <li>Largo: {measurements.largo}cm</li>}
         {measurements.tiro && <li>Tiro: {measurements.tiro}cm</li>}
       </ul>
