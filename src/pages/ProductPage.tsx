@@ -272,41 +272,15 @@ const ProductPage: React.FC = () => {
   
                   <p className="text-3xl mt-4">${product.price}</p>
   
-                  {/* Shipping Calculator */}
-                  <div className="my-6 p-4 border border-gray-200 rounded-lg">
-                    <div className="flex items-center gap-3 mb-3">
-                      <Truck size={20} className="text-gray-600" />
-                      <p className="font-bold text-md">Calculá el costo de envío</p>
+                  {/* Mensaje de Envío Gratis Fijo (Reemplaza a la calculadora) */}
+                  <div className="my-6 p-4 bg-gray-50 border border-gray-200 rounded-lg flex items-center gap-4">
+                    <div className="bg-green-100 p-2 rounded-full">
+                      <Truck size={20} className="text-green-700" />
                     </div>
-                    <div className="flex gap-2">
-                      <input 
-                        type="text"
-                        value={postalCode}
-                        onChange={(e) => setPostalCode(e.target.value)}
-                        placeholder="Tu código postal"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-800"
-                      />
-                      <button 
-                        onClick={handleCalculateShipping}
-                        disabled={isCalculatingShipping || !postalCode}
-                        className="bg-gray-800 text-white font-bold px-5 py-2 rounded-md hover:bg-gray-900 disabled:bg-gray-400 flex items-center justify-center"
-                      >
-                        {isCalculatingShipping ? <Loader2 size={20} className="animate-spin" /> : "Calcular"}
-                      </button>
+                    <div>
+                      <p className="font-bold text-sm text-gray-900 uppercase tracking-wide">Envío gratis a todo el país</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Llega a tu casa en 3 a 7 días hábiles por Correo Argentino.</p>
                     </div>
-                    {shippingOptions.length > 0 && (
-                      <div className="mt-4 space-y-3">
-                        {shippingOptions.map(option => (
-                          <div key={option.id} className="flex justify-between items-start text-sm">
-                            <div>
-                              <span>{option.name}</span>
-                              <p className="text-xs text-gray-500">{option.deliveryEstimate}</p>
-                            </div>
-                            <span className="font-bold">${option.cost}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
   
                   {/* TALLE */}

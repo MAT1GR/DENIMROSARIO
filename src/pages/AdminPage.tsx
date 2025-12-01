@@ -8,11 +8,7 @@ import { CustomersTab } from '../components/admin/CustomersTab';
 import { SettingsTab } from '../components/admin/SettingsTab';
 import SubscribersTab from '../components/admin/SubscribersTab'; // Import new tab
 import { 
-<<<<<<< HEAD
-  BarChart3, Package, Tag, ShoppingCart, Users, Settings, LogOut, Mail // Import Mail icon
-=======
-  BarChart3, Package, ShoppingCart, Users, Settings, LogOut 
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
+  BarChart3, Package, ShoppingCart, Users, Settings, LogOut, Mail // Import Mail icon
 } from 'lucide-react';
 
 const AdminPage: React.FC = () => {

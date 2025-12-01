@@ -56,13 +56,6 @@ export const calculateShipping = (req: Request, res: Response) => {
         return res.status(400).json({ message: 'El código postal es requerido.' });
     }
 
-    // Special handling for free shipping postal code
-    if (postalCode === "3413981584") {
-        return res.json({
-            options: [{ name: 'Envío Gratis', cost: 0, id: 'free_shipping', deliveryEstimate: 'N/A' }]
-        });
-    }
-
     const province = getProvinceFromPostalCode(postalCode);
     const rosarioPostalCodes = ['2000', 'S2000', 'S2001', 'S2002', 'S2003', 'S2004', 'S2005', 'S2006', 'S2007', 'S2008', 'S2009', 'S2010', 'S2011', 'S2012', 'S2013'];
     
@@ -71,26 +64,16 @@ export const calculateShipping = (req: Request, res: Response) => {
 
     if (rosarioPostalCodes.includes(postalCode.trim().toUpperCase())) {
         shippingOptions = [
-            { name: 'Cadete (Solo Rosario)', cost: 4500, id: 'cadete', deliveryEstimate: '2-4 días hábiles' },
-            { name: 'Correo Argentino - Envío a Domicilio', cost: 7000, id: 'domicilio', deliveryEstimate: mailDeliveryEstimate }
+            // CAMBIO: Costo 0 para Cadete
+            { name: 'Cadete (Solo Rosario)', cost: 0, id: 'cadete', deliveryEstimate: '24-48hs' },
+            // CAMBIO: Costo 0 para Correo
+            { name: 'Correo Argentino - A Sucursal/Domicilio', cost: 0, id: 'domicilio', deliveryEstimate: mailDeliveryEstimate }
         ];
     } else {
-        let shippingCost = 8679; // Precio por defecto para Zona 2
-        
-        if (province) {
-            const zona1 = ['Buenos Aires', 'Córdoba', 'Corrientes', 'Entre Ríos', 'Formosa', 'San Luis', 'Santiago del Estero'];
-            const zona3 = ['Chubut', 'Neuquén', 'Río Negro', 'Santa Cruz', 'Tierra del Fuego'];
-            
-            if (zona1.includes(province)) {
-                shippingCost = 7944;
-            } else if (zona3.includes(province)) {
-                shippingCost = 9177;
-            }
-        }
-        
         shippingOptions.push({
             name: 'Correo Argentino - Envío a Domicilio',
-            cost: shippingCost,
+            // CAMBIO: Costo 0 para todo el país
+            cost: 0, 
             id: 'domicilio',
             deliveryEstimate: mailDeliveryEstimate
         });

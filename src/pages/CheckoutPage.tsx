@@ -316,7 +316,7 @@ const CheckoutPage: React.FC = () => {
                           )}
                         </div>
                         <span className="font-medium text-sm">
-                          ${option.cost.toLocaleString("es-AR").replace(/\./g, '')}
+                          ${option.cost.toLocaleString("es-AR")}
                         </span>
                       </label>
                     ))}
@@ -386,7 +386,7 @@ const CheckoutPage: React.FC = () => {
                 <div className="flex justify-between items-center text-gris-oscuro border-t border-arena pt-4">
                   <span>Subtotal</span>
                   <span className="font-medium">
-                    ${subtotal.toLocaleString("es-AR").replace(/\./g, '')}
+                    ${subtotal.toLocaleString("es-AR")}
                   </span>
                 </div>
 
@@ -394,7 +394,7 @@ const CheckoutPage: React.FC = () => {
                   <span>Envío</span>
                   <span className="font-medium">
                     {selectedShipping
-                      ? `$${selectedShipping.cost.toLocaleString("es-AR").replace(/\./g, '')}`
+                      ? `$${selectedShipping.cost.toLocaleString("es-AR")}`
                       : "A calcular"}
                   </span>
                 </div>
@@ -403,7 +403,7 @@ const CheckoutPage: React.FC = () => {
                   <div className="flex justify-between items-center text-green-600">
                     <span>Descuento MP (-10%)</span>
                     <span className="font-medium">
-                      - ${(total * 0.1).toLocaleString("es-AR").replace(/\./g, '')}
+                      - ${(total * 0.1).toLocaleString("es-AR")}
                     </span>
                   </div>
                 )}
@@ -411,7 +411,7 @@ const CheckoutPage: React.FC = () => {
                 <div className="flex justify-between items-center text-xl font-bold border-t border-arena pt-4">
                   <span className="text-gris-oscuro">Total</span>
                   <span className="text-2xl text-black">
-                    ${displayedTotal.toLocaleString("es-AR").replace(/\./g, '')}
+                    ${displayedTotal.toLocaleString("es-AR")}
                   </span>
                 </div>
 
@@ -545,8 +545,7 @@ const CartItem = ({ item }: { item: CartItemType }) => {
         </div>
       </div>
       <span className="font-semibold text-gris-oscuro">
-        ${(item.product.price * item.quantity).toLocaleString("es-AR").replace(/\./g, '')}
-      </span>
+                  ${(item.product.price * item.quantity).toLocaleString("es-AR")}      </span>
     </div>
   );
 };

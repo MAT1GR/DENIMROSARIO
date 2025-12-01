@@ -210,6 +210,11 @@ const HomePage: React.FC = () => {
               </button>
             </div>
 
+            {/* AGREGAR ESTO: Mensaje de Envío Gratis sutil pero visible */}
+            <p className="mt-6 text-xs md:text-sm font-medium tracking-[0.2em] uppercase text-white/80 animate-pulse-slow">
+              Envíos gratis a toda Argentina 🇦🇷
+            </p>
+
 
           </div>
           {/* Solo se deja el indicador de flecha */}

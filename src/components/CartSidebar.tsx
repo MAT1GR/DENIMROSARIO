@@ -123,24 +123,12 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
             {/* Footer Section (Fixed at the bottom) */}
             <div className="p-6 border-t bg-white">
               
-              {/* Free Shipping Incentive */}
-              {(total > 0) && (
-                <div className="text-center text-sm mb-4">
-                  {total < 25000 ? (
-                    <p>
-                      ¡Te faltan solo <span className="font-bold">${(25000 - total).toLocaleString('es-AR')}</span> para el envío gratis!
-                    </p>
-                  ) : (
-                    <p className="font-bold text-green-600">
-                      ¡Felicitaciones! Tenés envío gratis.
-                    </p>
-                  )}
-                  <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
-                    <div 
-                      className="bg-black h-2.5 rounded-full" 
-                      style={{ width: `${Math.min((total / 25000) * 100, 100)}%` }}
-                    ></div>
-                  </div>
+              {/* Aviso de Envío Gratis en el Footer del Carrito */}
+              {total > 0 && (
+                <div className="text-center text-sm mb-4 bg-green-50 p-3 rounded-lg border border-green-100">
+                  <p className="font-bold text-green-800 flex items-center justify-center gap-2">
+                    <span>✨</span> ¡Tenés ENVÍO GRATIS en este pedido!
+                  </p>
                 </div>
               )}
 

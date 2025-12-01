@@ -3,14 +3,9 @@ import WhatsAppLogo from '../assets/whatsapp-logo.png';
 import { useSettings } from '../hooks/useSettings';
 
 const WhatsAppButton: React.FC<{ message?: string }> = ({ message: propMessage }) => {
-<<<<<<< HEAD
-  const phoneNumber = '5493541374915'; 
-  const defaultMessage = '';
-=======
   const { settings } = useSettings();
   const phoneNumber = settings.contact_whatsapp || '543541374915'; // Fallback to old number
   const defaultMessage = ''; // No default message
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
   const finalMessage = propMessage || defaultMessage;
 
   const whatsappUrl = finalMessage

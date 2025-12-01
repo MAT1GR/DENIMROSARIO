@@ -100,19 +100,8 @@ export function initializeSchema() {
   
   db.exec(createTablesSQL);
 
-<<<<<<< HEAD
-  // --- Add faqs column to products table if it doesn't exist ---
-  try {
-    db.exec("ALTER TABLE products ADD COLUMN faqs TEXT DEFAULT '[]'");
-    console.log("[DB] 'faqs' column added to 'products' table.");
-  } catch (e) {
-    // This will likely fail if the column already exists, which is fine.
-    // console.log("[DB] 'faqs' column likely already exists.");
-  }
-=======
   // Run migrations to update existing schemas
   runMigrations();
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
 
   // Seeding initial data
   seedInitialData();

@@ -133,19 +133,12 @@ export const authService = {
 };
 
 export const productService = {
-<<<<<<< HEAD
   getAll(filters: { category?: string; size?: string; minPrice?: number; maxPrice?: number; sortBy?: string; page?: number; limit?: number }) {
     const db = getDB();
     const { category, size, minPrice, maxPrice, sortBy, page = 1, limit = 9 } = filters;
-=======
-  getAll(filters: { sortBy?: string; page?: number; limit?: number }) {
-    const db = getDB();
-    const { sortBy, page = 1, limit = 9 } = filters;
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
     
     const whereClauses = ["is_active = 1"];
     const params: (string | number)[] = [];
-<<<<<<< HEAD
     if (category) {
       whereClauses.push("category = ?");
       params.push(category);
@@ -158,8 +151,6 @@ export const productService = {
       whereClauses.push("price <= ?");
       params.push(maxPrice);
     }
-=======
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
 
     const where = `WHERE ${whereClauses.join(" AND ")}`;
     let orderBy = "ORDER BY id DESC";
@@ -261,17 +252,14 @@ export const productService = {
   create(product: Omit<Product, 'id' | 'isActive'>): number {
     const db = getDB();
     const stmt = db.prepare(
-<<<<<<< HEAD
       'INSERT INTO products (name, price, images, video, category, description, material, rise, rise_cm, fit, waist_flat, is_waist_stretchy, length, sizes, is_new, is_best_seller, faqs) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-=======
-      'INSERT INTO products (name, price, images, video, description, material, rise, rise_cm, fit, waist_flat, is_waist_stretchy, length, sizes, is_new, is_best_seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
     );
     stmt.run([
       product.name,
       product.price,
       JSON.stringify(product.images),
       product.video ?? null,
+      product.category,
       product.description,
       product.material,
       product.rise,
@@ -294,16 +282,13 @@ export const productService = {
   update(productId: string, product: Partial<Product>): boolean {
     const db = getDB();
     db.run(
-<<<<<<< HEAD
       'UPDATE products SET name = COALESCE(?, name), price = COALESCE(?, price), images = COALESCE(?, images), video = COALESCE(?, video), category = COALESCE(?, category), description = COALESCE(?, description), material = COALESCE(?, material), rise = COALESCE(?, rise), rise_cm = COALESCE(?, rise_cm), fit = COALESCE(?, fit), waist_flat = COALESCE(?, waist_flat), is_waist_stretchy = COALESCE(?, is_waist_stretchy), length = COALESCE(?, length), sizes = COALESCE(?, sizes), is_new = COALESCE(?, is_new), is_best_seller = COALESCE(?, is_best_seller), is_active = COALESCE(?, is_active), faqs = COALESCE(?, faqs) WHERE id = ?',
-=======
-      'UPDATE products SET name = COALESCE(?, name), price = COALESCE(?, price), images = COALESCE(?, images), video = COALESCE(?, video), description = COALESCE(?, description), material = COALESCE(?, material), rise = COALESCE(?, rise), rise_cm = COALESCE(?, rise_cm), fit = COALESCE(?, fit), waist_flat = COALESCE(?, waist_flat), is_waist_stretchy = COALESCE(?, is_waist_stretchy), length = COALESCE(?, length), sizes = COALESCE(?, sizes), is_new = COALESCE(?, is_new), is_best_seller = COALESCE(?, is_best_seller), is_active = COALESCE(?, is_active) WHERE id = ?',
->>>>>>> cafede2b106befa8c646dad7d360d62d909ba4a3
       [
         product.name ?? null,
         product.price ?? null,
         product.images ? JSON.stringify(product.images) : null,
         product.video ?? null,
+        product.category ?? null,
         product.description ?? null,
         product.material ?? null,
         product.rise ?? null,
