@@ -41,7 +41,7 @@ export const subscribeToDrop = async (req: Request, res: Response) => {
   }
 
   try {
-    const success = await db.notifications.subscribe(email);
+    const success = await db.notifications.subscribe("Drop Subscriber", email);
     if (success) {
       res.status(201).json({ message: '¡Gracias por suscribirte! Te avisaremos.' });
     } else {

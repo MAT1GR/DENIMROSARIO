@@ -20,10 +20,6 @@ const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
 
       <div className="grid grid-cols-3 gap-4 text-sm text-gray-800">
         <div className="flex flex-col text-center">
-          <span className="text-xs text-gray-400 mb-1">Alto</span>
-          <span className="font-medium">{measurements.alto} cm</span>
-        </div>
-        <div className="flex flex-col text-center">
           <span className="text-xs text-gray-400 mb-1">Cintura</span>
           <span className="font-medium">{measurements.cintura} cm</span>
           {product.isWaistStretchy && <span className="text-xs text-gray-500">Elastizado</span>}
@@ -32,6 +28,10 @@ const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
           <span className="text-xs text-gray-400 mb-1">Tiro</span>
           <span className="font-medium">{measurements.tiro_cm} cm</span>
           <span className="text-xs text-gray-500">{measurements.tiro}</span>
+        </div>
+        <div className="flex flex-col text-center">
+          <span className="text-xs text-gray-400 mb-1">Alto</span>
+          <span className="font-medium">{measurements.alto} cm</span>
         </div>
       </div>
     </div>
@@ -371,7 +371,7 @@ const ProductPage: React.FC = () => {
                       <Undo2 size={18} /> 30 días para cambios
                     </div>
                     <div className="flex gap-3">
-                      <Truck size={18} /> Envíos a todo el país
+                      <HelpCircle size={18} /> Atención al cliente personalizada
                     </div>
                   </div>
   

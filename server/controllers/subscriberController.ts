@@ -8,18 +8,14 @@ export const handleSubscribe = async (req: Request, res: Response) => {
   }
 
   try {
-    const result = await db.subscribers.addSubscriber(email);
-    if (result.changes > 0) {
+    const success = await db.notifications.subscribe("Web Subscriber", email); // Use db.notifications and provide a name
+    if (success) {
       res.status(201).json({ message: 'Suscripción exitosa.' });
     } else {
-      // This could happen if the email already exists and the INSERT OR IGNORE statement does nothing
+      // If success is false, it means the email already exists
       res.status(200).json({ message: 'Este email ya estaba suscripto.' });
     }
   } catch (error: any) {
-    // Check for unique constraint error explicitly
-    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-        return res.status(200).json({ message: 'Este email ya estaba suscripto.' });
-    }
     console.error('Subscription error:', error);
     res.status(500).json({ message: 'Error interno del servidor al procesar la suscripción.' });
   }
@@ -30,7 +26,7 @@ export const getSubscribers = async (req: Request, res: Response) => {
     // does not seem to have a backend authentication middleware. Access control is handled
     // by obscurity (only admin panel calls this). This should be improved in the future.
     try {
-        const subscribers = await db.subscribers.getAllSubscribers();
+        const subscribers = await db.notifications.getAll(); // Use db.notifications.getAll()
         res.json(subscribers);
     } catch (error) {
         console.error("Error fetching subscribers:", error);
