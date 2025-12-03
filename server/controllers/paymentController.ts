@@ -4,6 +4,7 @@ import { MercadoPagoConfig, Preference, Payment } from "mercadopago";
 import { db } from '../lib/database.js';
 import "dotenv/config";
 import { CartItem } from "../../server/types/index.js";
+import { sendEmail } from '../emailService.js';
 
 const router = Router();
 
@@ -247,6 +248,33 @@ const createTransferOrder = async (req: Request, res: Response) => {
       paymentMethod: 'transferencia',
       createdAt: new Date(),
     });
+
+    const settings = db.settings.getAll();
+    const bankDetails = {
+        cvu: settings.transfer_cvu?.value || 'No disponible',
+        alias: settings.transfer_alias?.value || 'No disponible',
+        titular: settings.transfer_titular?.value || 'No disponible',
+    };
+
+    const emailSubject = `Datos para tu pago - Pedido #${newOrderId}`;
+    const emailHtml = `
+        <div style="font-family: Arial, sans-serif; color: #333;">
+            <h1>¡Gracias por tu compra, ${shippingInfo.firstName}!</h1>
+            <p>Para completar tu pedido, realiza la transferencia con los siguientes datos:</p>
+            <h3>Datos de la cuenta:</h3>
+            <ul>
+                <li><strong>CVU:</strong> ${bankDetails.cvu}</li>
+                <li><strong>Alias:</strong> ${bankDetails.alias}</li>
+                <li><strong>Titular:</strong> ${bankDetails.titular}</li>
+            </ul>
+            <p><strong>Total a transferir: $${finalTotal.toLocaleString('es-AR')}</strong></p>
+            <p>Una vez realizada la transferencia, no te olvides de enviarnos el comprobante por WhatsApp para que podamos procesar tu envío.</p>
+            <hr/>
+            <p>Te recordamos que tenés 15 minutos para realizar el pago o la orden se cancelará automáticamente.</p>
+        </div>
+    `;
+
+    sendEmail(shippingInfo.email, emailSubject, emailHtml);
 
     res.status(201).json({ id: newOrderId.toString(), order: db.orders.getById(newOrderId.toString()) });
 
