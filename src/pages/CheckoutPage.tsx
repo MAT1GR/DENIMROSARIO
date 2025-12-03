@@ -66,7 +66,7 @@ const CheckoutPage: React.FC = () => {
       if (formData.postalCode === '2000' || formData.postalCode.startsWith('2000')) {
          setIsRosario(true);
          setShippingOptions([]);
-         setSelectedShipping({ id: 'cadete', name: 'Cadete (Solo Rosario)', cost: 0 }); // Pre-seleccionar Cadete
+         setSelectedShipping({ id: 'cadete', name: 'Cadete (Solo Rosario) - GRATIS', cost: 0 }); // Pre-seleccionar Cadete
       } else {
         setIsRosario(false);
         const response = await fetch("/api/shipping/calculate", {
@@ -117,7 +117,10 @@ const CheckoutPage: React.FC = () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ ...orderPayload, shippingCost: 0 }),
         });
-        if (!response.ok) throw new Error("Error al iniciar pago.");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Error al iniciar pago.");
+        }
         const data = await response.json();
         if (data.init_point) window.location.href = data.init_point;
       } catch (err: any) {
@@ -157,9 +160,7 @@ const CheckoutPage: React.FC = () => {
                 <legend className="text-xl font-bold mb-4 text-gris-oscuro">1. DATOS DE CONTACTO</legend>
                 <InputField name="email" placeholder="E-mail" value={formData.email} onChange={handleChange} required type="email" />
               </fieldset>
-              <p className="text-sm text-green-700 bg-green-50 p-2 rounded-md font-medium mb-4">
-                  ✨ ¡El envío es GRATIS a tu domicilio!
-                </p>
+
               <fieldset className="space-y-4">
                 <legend className="text-xl font-bold mb-4 text-gris-oscuro">2. DATOS DE ENVÍO</legend>
                 
@@ -190,7 +191,9 @@ const CheckoutPage: React.FC = () => {
                           {shippingOptions.map((option) => (
                                <label key={option.id} className="flex items-center p-3 border rounded-lg cursor-pointer has-[:checked]:bg-gray-100">
                                   <input type="radio" name="shipping" value={option.id} checked={selectedShipping?.id === option.id} onChange={() => setSelectedShipping(option)} className="h-4 w-4 text-black focus:ring-black"/>
-                                  <span className="ml-2 text-sm font-medium">{option.name}</span>
+                                  <span className="ml-2 text-sm font-medium">{option.name}
+                                    {option.cost === 0 && <span className="ml-2 text-green-600 font-bold">GRATIS</span>}
+                                  </span>
                                </label>
                           ))}
                       </div>

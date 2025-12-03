@@ -48,8 +48,8 @@ export const CadeteDaySelector: React.FC<CadeteDaySelectorProps> = ({ onDaySelec
   const [days, setDays] = useState<DayOption[]>(generateDeliveryDays());
 
   return (
-    <div className="space-y-2 pt-4">
-      <h3 className="text-md font-medium text-gris-oscuro mb-2">Elegí el día de entrega:</h3>
+    <div className="space-y-2 mb-2">
+      <h3 className="text-md font-medium text-gris-oscuro">Elegí el día de entrega:</h3>
       {days.map((day) => (
         <label
           key={day.value}
@@ -66,7 +66,9 @@ export const CadeteDaySelector: React.FC<CadeteDaySelectorProps> = ({ onDaySelec
             />
             <span className="ml-3 text-sm text-gris-oscuro flex flex-col">
               <span>{day.label}</span>
-              <span className="text-xs text-gray-500">De 08:00 a 11:00 hs</span>
+              <span className="text-xs text-gray-500">
+                {new Date(day.value).getUTCDay() === 5 ? 'De 13:00 a 16:30 hs' : 'De 08:00 a 11:00 hs'}
+              </span>
             </span>
           </div>
         </label>

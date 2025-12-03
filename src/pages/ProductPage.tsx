@@ -1,3 +1,5 @@
+
+
 // --- COMPONENTE DE MEDIDAS (Minimalista) ---
 const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
   const measurements = {
@@ -12,7 +14,7 @@ const ProductMeasurements: React.FC<{ product: Product }> = ({ product }) => {
       <div className="flex items-center justify-center mb-6">
         <div className="flex items-center gap-2">
           <Ruler size={14} className="text-gray-400" />
-          <span className="text-sm font-bold text-black uppercase tracking-widest">
+          <span className="text-base font-bold text-black uppercase tracking-widest">
             Medidas
           </span>
         </div>
@@ -52,6 +54,8 @@ import {
   ShoppingCart,
   Loader2,
   Star,
+  FileText,
+  MessageCircle,
 } from "lucide-react";
 import { Product } from "../../server/types";
 import { useCart } from "../hooks/useCart";
@@ -99,7 +103,22 @@ const ProductPage: React.FC = () => {
   const [showReadMore, setShowReadMore] = useState(false);
     const descriptionRef = useRef<HTMLDivElement>(null);
     const relatedRef = useScrollAnimation<HTMLElement>();
-    const STANDARD_SIZES = ["34", "36", "38", "40", "42", "44"];
+
+    const getDeliveryDate = () => {
+      const today = new Date();
+      let deliveryDate = new Date(today);
+      deliveryDate.setDate(today.getDate() + 2);
+  
+      if (deliveryDate.getDay() === 0) { // Sunday
+        deliveryDate.setDate(deliveryDate.getDate() + 1);
+      }
+  
+      const optionsWeekday: Intl.DateTimeFormatOptions = { weekday: 'long' };
+      const optionsDay: Intl.DateTimeFormatOptions = { day: 'numeric' };
+      const weekday = deliveryDate.toLocaleDateString('es-ES', optionsWeekday);
+      const day = deliveryDate.toLocaleDateString('es-ES', optionsDay);
+      return `<strong>${weekday}</strong> <strong>${day}</strong>`;
+    };
   
     useEffect(() => {
       const fetchProductData = async () => {
@@ -267,102 +286,106 @@ const ProductPage: React.FC = () => {
                     {product.name}
                   </h1>
   
-                  <p className="text-3xl mt-4">${product.price.toLocaleString('es-AR')}</p>
+                                                                                                            <p className="text-3xl mt-2">${product.price.toLocaleString('es-AR')}</p>
   
-                  {/* Mensaje de Envío Gratis Fijo */}
-                  <div className="my-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center gap-4">
-                    <div className="bg-green-600 p-2 rounded-full text-white">
-                      <Truck size={20} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm text-green-600 uppercase tracking-wide">Envío gratis a todo el país</p>
-                      <p className="text-xs text-green-600 mt-0.5">Llega a tu casa en 3 a 7 días hábiles.</p>
-                    </div>
-                  </div>
+                                                        
   
-                  {/* TALLE */}
-                  <div className="mt-8">
-                    <div className="flex justify-between items-center mb-3">
-                      <p className="text-sm font-bold tracking-wider">TALLE</p>
-                      <button onClick={() => navigate('/tallas')} className="text-sm text-gray-500 hover:text-black underline flex items-center gap-1">
-                        <Ruler size={14} />
-                        Guía de talles
-                      </button>
-                    </div>
+                                                                                                                                                              {/* BOTONES DE COMPRA */}
   
-                    <div className="flex flex-wrap gap-2">
-                      {STANDARD_SIZES.map((size) => {
-                        const info = product.sizes[size];
-                        const available = info?.available && info?.stock > 0;
+                                                                                                                                                              <div className="mt-12 mb-6 flex flex-col sm:flex-row gap-3">
   
-                        return (
-                          <button
-                            key={size}
-                            disabled={!available}
-                            onClick={() => available && setSelectedSize(size)}
-                            className={`px-4 py-2 text-sm border rounded-md ${
-                              !available
-                                ? "border-arena text-arena/70 cursor-not-allowed line-through"
-                                : selectedSize === size
-                                ? "bg-black text-white border-black"
-                                : "border-arena hover:border-black"
-                            }`}
-                          >
-                            {size}
-                          </button>
-                        );
-                      })}
-                    </div>
-                    {selectedSize && isInStock && (
-                      <p className="mt-3 text-red-600 font-medium text-sm animate-pulse">
-                        ¡Última unidad disponible!
-                      </p>
-                    )}
-                  </div>
+                                                                                                                                                                  <div className="relative flex-1">
   
-                                                  {/* BOTONES DE COMPRA */}
-                                                  <div className="mt-8 mb-8 flex flex-col sm:flex-row gap-3">
-                                                    <button
-                                                      onClick={() => {
-                                                        if (!product) return;
-                                                        addToCart(product, selectedSize, 1);
-                                                        navigate("/checkout");
-                                                      }}
-                                                      disabled={!selectedSize || !isInStock}
-                                                      className={`w-full py-3 text-sm font-bold rounded-md border transition-colors ${
-                                                        selectedSize && isInStock
-                                                          ? "bg-black text-white border-black hover:bg-gray-800 hover:text-white"
-                                                          : "bg-arena/50 text-gray-400 cursor-not-allowed border-transparent"
-                                                      }`}
-                                                    >
-                                                      COMPRAR AHORA
-                                                    </button>
-                                                    <button
-                                                      onClick={handleAddToCart}
-                                                      disabled={!selectedSize || !isInStock || isAdding || showSuccess}
-                                                      className={`w-full flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-md border transition-all duration-300 ${
-                                                        !selectedSize || !isInStock
-                                                          ? "bg-arena/50 text-gray-400 cursor-not-allowed border-transparent"
-                                                          : showSuccess
-                                                          ? "bg-green-500 text-white border-green-500"
-                                                          : "bg-transparent text-black border-black hover:bg-black hover:text-white"
-                                                      }`}
-                                                    >
-                                                      {isAdding ? (
-                                                        <Loader2 size={20} className="animate-spin" />
-                                                      ) : showSuccess ? (
-                                                        <>
-                                                          <CheckCircle size={20} />
-                                                          AGREGADO
-                                                        </>
-                                                      ) : (
-                                                        <>
-                                                          <ShoppingCart size={16} />
-                                                          AGREGAR AL CARRITO
-                                                        </>
-                                                      )}
-                                                    </button>
-                                                  </div>                  {/* ICONOS */}
+                                                                                                                                                                      <div className="absolute bottom-full w-full bg-green-600 text-white text-xs font-bold text-center py-1 rounded-t-md">
+  
+                                                                                                                                                                          <Truck size={12} className="inline-block mr-1" />
+                                                                                                                                                                          <span dangerouslySetInnerHTML={{ __html: `Recibilo <strong>gratis</strong> a partir del ${getDeliveryDate()}` }} />
+                                
+                                                                                                                                                                      </div>
+  
+                                                                                                                                                                      <button
+  
+                                                                                                            onClick={() => {
+  
+                                                                                                              if (!product) return;
+  
+                                                                                                              addToCart(product, selectedSize, 1);
+  
+                                                                                                              navigate("/checkout");
+  
+                                                                                                            }}
+  
+                                                                                                            disabled={!selectedSize || !isInStock}
+  
+                                                                                                            className={`w-full py-3 text-sm font-bold rounded-b-md border transition-colors ${
+  
+                                                                                                              selectedSize && isInStock
+  
+                                                                                                                ? "bg-black text-white border-black hover:bg-gray-800 hover:text-white"
+  
+                                                                                                                : "bg-arena/50 text-gray-400 cursor-not-allowed border-transparent"
+  
+                                                                                                            }`}
+  
+                                                                                                          >
+  
+                                                                                                            COMPRAR AHORA
+  
+                                                                                                          </button>
+  
+                                                                                                                                                                  </div>
+  
+                                                                                                                                                                  <button
+  
+                                                                                                            onClick={handleAddToCart}
+  
+                                                                                                            disabled={!selectedSize || !isInStock || isAdding || showSuccess}
+  
+                                                                                                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-md border transition-all duration-300 ${
+  
+                                                                                                              !selectedSize || !isInStock
+  
+                                                                                                                ? "bg-arena/50 text-gray-400 cursor-not-allowed border-transparent"
+  
+                                                                                                                : showSuccess
+  
+                                                                                                                ? "bg-green-500 text-white border-green-500"
+  
+                                                                                                                : "bg-transparent text-black border-black hover:bg-black hover:text-white"
+  
+                                                                                                            }`}
+  
+                                                                                                          >
+  
+                                                                                                            {isAdding ? (
+  
+                                                                                                              <Loader2 size={20} className="animate-spin" />
+  
+                                                                                                            ) : showSuccess ? (
+  
+                                                                                                              <>
+  
+                                                                                                                <CheckCircle size={20} />
+  
+                                                                                                                AGREGADO
+  
+                                                                                                              </>
+  
+                                                                                                            ) : (
+  
+                                                                                                              <>
+  
+                                                                                                                <ShoppingCart size={16} />
+  
+                                                                                                                AGREGAR AL CARRITO
+  
+                                                                                                              </>
+  
+                                                                                                            )}
+  
+                                                                                                          </button>
+  
+                                                                                                                                                              </div>                  {/* ICONOS */}
                   <div className="mt-3 space-y-3 text-[#7a7a7a] text-sm">
                     <div className="flex gap-3">
                       <ShieldCheck size={18} /> Compra segura con Mercado Pago
@@ -371,18 +394,27 @@ const ProductPage: React.FC = () => {
                       <Undo2 size={18} /> 30 días para cambios
                     </div>
                     <div className="flex gap-3">
-                      <HelpCircle size={18} /> Atención al cliente personalizada
+                      <MessageCircle size={18} /> Atención al cliente personalizada
                     </div>
                   </div>
   
+                  <ProductMeasurements product={product} />
+
                   {/* DESCRIPCIÓN */}
                   {product.description && (
-                    <div className="mt-8">
-                      <h3 className="text-xl font-bold mb-4">Descripción</h3>
+                    <div>
+                      <div className="flex items-center justify-center mb-6">
+                        <div className="flex items-center gap-2">
+                          <FileText size={14} className="text-gray-400" />
+                          <span className="text-base font-bold text-black uppercase tracking-widest">
+                            Descripción
+                          </span>
+                        </div>
+                      </div>
   
                       <div
                         ref={descriptionRef}
-                        className={`relative ${
+                        className={`relative px-4 ${
                           !isDescriptionExpanded ? "max-h-16 overflow-hidden" : ""
                         }`}
                       >
@@ -398,7 +430,7 @@ const ProductPage: React.FC = () => {
                           onClick={() =>
                             setIsDescriptionExpanded(!isDescriptionExpanded)
                           }
-                          className="text-black font-bold mt-2"
+                          className="text-black font-bold mt-2 px-4"
                         >
                           {isDescriptionExpanded ? "Leer menos" : "Leer más"}
                         </button>
@@ -406,8 +438,7 @@ const ProductPage: React.FC = () => {
                     </div>
                   )}
                   
-                  {/* MEDIDAS */}
-                  <ProductMeasurements product={product} />
+
 
                   {/* PREGUNTAS FRECUENTES (Product Specific) */}
                   {Array.isArray(product.faqs) && product.faqs.length > 0 && (

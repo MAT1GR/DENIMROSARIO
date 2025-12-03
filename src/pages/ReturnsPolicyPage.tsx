@@ -21,40 +21,56 @@ const ReturnsPolicyPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="space-y-8 mt-12">
+          <div className="space-y-10 mt-12">
 
-
-            {/* Card Devoluciones */}
+            {/* Card Cambios y Devoluciones */}
             <div className="border border-gray-200 rounded-lg p-6 bg-white">
               <div className="flex items-center mb-4">
-                <AlertTriangle className="text-red-500 mr-3 flex-shrink-0" size={24} />
-                <h2 className="text-xl md:text-2xl font-bold">Devoluciones por Falla</h2>
+                <RefreshCw className="text-green-500 mr-3 flex-shrink-0" size={24} />
+                <h2 className="text-xl md:text-2xl font-bold">Cambios y Devoluciones sin Complicaciones</h2>
               </div>
               <p className="text-brand-secondary-text mb-4 text-sm md:text-base">
-                Priorizamos la calidad, pero si tu jean presenta una falla de fábrica, gestionaremos la devolución del dinero.
+                Queremos que ames tu jean. Si no te queda como esperabas o simplemente cambiaste de opinión, no hay problema. Tu confianza es nuestra prioridad.
               </p>
-              <ul className="list-disc list-inside space-y-2 text-brand-primary-text text-sm md:text-base">
-                <li>El reclamo debe realizarse dentro de los <strong>7 días</strong> de haber recibido el producto.</li>
-                <li>La falla será evaluada por nuestro equipo de calidad.</li>
-                <li>Una vez aprobada, el reembolso se procesará al mismo medio de pago utilizado en la compra.</li>
-                <li>Nosotros nos hacemos cargo del costo de envío para la devolución del producto fallado.</li>
+              <ul className="list-disc list-inside space-y-3 text-brand-primary-text text-sm md:text-base">
+                <li>Tenés <strong>30 días corridos</strong> desde que recibís tu compra para solicitar un cambio o devolución.</li>
+                <li>Podés cambiarlo por otro talle, otro modelo o solicitar la devolución de tu dinero.</li>
+                <li><strong>Condición:</strong> El producto debe estar en perfectas condiciones, sin uso, sin lavar y con sus etiquetas originales.</li>
+                <li><strong>Costo de envío:</strong> El costo del envío de vuelta a nuestro depósito corre por tu cuenta. Sin embargo, si es un cambio por otro producto, <strong>el envío de vuelta a tu casa es gratis</strong>.</li>
+                 <li>Para iniciar el proceso, simplemente respondé a tu mail de confirmación de compra o escribinos a <a href="mailto:contacto@rosariodenim.com" className="text-blue-500 hover:underline">contacto@rosariodenim.com</a>.</li>
               </ul>
             </div>
 
+            {/* Garantía de Calidad */}
+            <div className="border border-gray-200 rounded-lg p-6 bg-white">
+              <div className="flex items-center mb-4">
+                <AlertTriangle className="text-red-500 mr-3 flex-shrink-0" size={24} />
+                <h2 className="text-xl md:text-2xl font-bold">Garantía de Calidad</h2>
+              </div>
+              <p className="text-brand-secondary-text mb-4 text-sm md:text-base">
+                Si tu producto presenta una falla de fábrica, nos hacemos cargo de todo.
+              </p>
+              <ul className="list-disc list-inside space-y-2 text-brand-primary-text text-sm md:text-base">
+                <li>El reclamo debe realizarse dentro de los <strong>30 días</strong> de haber recibido el producto.</li>
+                <li>Nosotros nos hacemos cargo de <strong>todos los costos de envío</strong> para la reposición del producto o la devolución del dinero.</li>
+                <li>La falla será evaluada por nuestro equipo para asegurar la calidad de nuestros procesos.</li>
+              </ul>
+            </div>
+            
             {/* Card Envíos */}
             <div className="border border-gray-200 rounded-lg p-6 bg-white">
               <div className="flex items-center mb-4">
                 <Truck className="text-blue-500 mr-3 flex-shrink-0" size={24} />
-                <h2 className="text-xl md:text-2xl font-bold">Envíos</h2>
+                <h2 className="text-xl md:text-2xl font-bold">Envíos a todo el País</h2>
               </div>
               <p className="text-brand-secondary-text mb-4 text-sm md:text-base">
-                Llegamos a cada rincón de Argentina.
+                Llegamos a cada rincón de Argentina para que tengas tu jean.
               </p>
               <ul className="list-disc list-inside space-y-2 text-brand-primary-text text-sm md:text-base">
                 <li>Despachamos los pedidos de <strong>4 a 7 días hábiles</strong> luego de acreditado el pago.</li>
-                <li>El costo de envío se calcula automáticamente en el checkout con tu código postal.</li>
-                <li>Una vez despachado, recibirás un código de seguimiento por mail para ver el estado de tu pedido.</li>
-                <li>Los envíos se realizan a través de Correo Argentino.</li>
+                <li>El costo de envío se calcula en el checkout con tu código postal. ¡Recordá que muchas veces es gratis!</li>
+                <li>Recibirás un código de seguimiento por mail para ver el estado de tu pedido en todo momento.</li>
+                <li>Los envíos se realizan a través de Correo Argentino, Andreani o comisionista según la zona.</li>
               </ul>
             </div>
           </div>

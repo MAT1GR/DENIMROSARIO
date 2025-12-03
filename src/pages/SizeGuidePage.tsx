@@ -70,79 +70,7 @@ const SizeGuidePage: React.FC = () => {
               </div>
             </div>
 
-            <div>
-              <h2 className="text-2xl font-bold mb-6">Tabla de Medidas (prenda en plano)</h2>
 
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-700 text-white">
-                      <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Talle
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Cintura (A)
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Tiro (B)
-                      </th>
-                      <th className="border border-gray-300 p-2 text-left text-xs sm:text-sm">
-                        Largo (C)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="hover:bg-gray-50">
-                      <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
-                        36
-                      </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">36 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">28 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">70 cm</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                      <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
-                        38
-                      </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">38 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">29 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">71 cm</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                      <td className="border border-gray-300 p-2 font-medium text-xs sm:text-sm">
-                        40
-                      </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">40 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">30 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">72 cm</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">
-                        42
-                      </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">42 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">31 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">73 cm</td>
-                    </tr>
-                    <tr className="hover:bg-gray-50">
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">
-                        44
-                      </td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">44 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">32 cm</td>
-                      <td className="border border-gray-300 p-2 text-xs sm:text-sm">74 cm</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-6 p-4 bg-gray-100 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-700">
-                  <Heart className="inline mr-2 text-gray-500" size={16} />
-                  <strong>¡Dato importante!:</strong> Estas son medidas de la prenda, no de tu cuerpo. Comparalas con un jean que ya tengas y te quede perfecto.
-                </p>
-              </div>
-            </div>
           </div>
 
           <div className="text-center bg-gray-100 p-8 rounded-lg mt-12">

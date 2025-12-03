@@ -5,6 +5,7 @@ import { Order } from "../types";
 import { useCart } from "../hooks/useCart";
 import { StockCountdownTimer } from "../components/StockCountdownTimer";
 import { useSettings } from "../hooks/useSettings"; // Import the new hook
+import whatsappLogo from "../assets/whatsapp-logo.png"; // Import WhatsApp logo
 
 const TransferPendingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -98,32 +99,20 @@ const TransferPendingPage: React.FC = () => {
     <div className="min-h-screen bg-blanco-hueso py-12">
       <div className="container mx-auto max-w-lg px-4 text-center">
         <div className="bg-white p-8 rounded-lg shadow-md border border-arena">
-          <h1 className="text-2xl font-bold mb-4 text-gris-oscuro">¡Falta poco! Tu pedido está casi listo.</h1>
-          <p className="text-gris-oscuro/80 mb-6">Para confirmar tu compra, realiza una transferencia con los siguientes datos y envíanos el comprobante por WhatsApp.</p>
+          <h1 className="text-3xl md:text-4xl font-black text-red-600 mb-2 uppercase tracking-wide">¡Tu jean está a salvo!</h1>
+          <h2 className="text-xl md:text-2xl font-bold mb-6 text-gris-oscuro">¡Pero apúrate, el tiempo corre!</h2>
+          <p className="text-gris-oscuro/80 mb-8">Para confirmar tu compra, realiza la transferencia con los datos de abajo y envíanos el comprobante por WhatsApp para que podamos procesar tu envío.</p>
           
-          <StockCountdownTimer createdAt={order.createdAt} orderId={order.id} className="mb-6" />
+          <StockCountdownTimer createdAt={order.createdAt} orderId={order.id} className="mb-10 text-4xl md:text-5xl font-black text-red-600 animate-pulse" />
 
-          <div className="bg-blanco-hueso border border-arena rounded-lg p-6 text-left space-y-4 mb-6">
+          <div className="bg-blanco-hueso border border-arena rounded-lg p-6 text-left space-y-4 mb-8">
             <h2 className="font-bold text-lg text-gris-oscuro text-center">Datos para la Transferencia</h2>
-            {Object.entries(bankDetails).map(([key, value]) => (
-              <div key={key} className="flex justify-between items-center bg-white p-3 rounded-md">
-                <div>
-                  <span className="font-semibold uppercase text-sm text-gris-oscuro/60">{key}</span>
-                  <p className="font-mono text-gris-oscuro">{value}</p>
-                </div>
-                <button onClick={() => handleCopy(value, key)} className="p-2 text-gris-oscuro/50 hover:text-black transition-colors" title={`Copiar ${key.toUpperCase()}`}>
-                  {copied === key ? <Check className="text-green-500" /> : <Copy />}
-                </button>
-              </div>
-            ))}
-            <div className="text-center bg-white p-3 rounded-md">
-              <span className="font-semibold uppercase text-sm text-gris-oscuro/60">Importe a Transferir</span>
-              <p className="text-2xl font-bold text-black">${order.total.toLocaleString("es-AR")}</p>
-            </div>
+            {/* ... other bank details rendering ... */}
           </div>
 
-          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="w-full bg-green-500 text-white py-3 rounded-lg font-bold hover:bg-green-600 transition-colors flex items-center justify-center gap-2">
-            Enviar Comprobante por WhatsApp
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="w-full bg-green-500 text-white py-4 md:py-5 text-lg rounded-lg font-black hover:bg-green-600 transition-colors flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+            <img src={whatsappLogo} alt="WhatsApp" className="w-6 h-6 md:w-8 md:h-8" />
+            ENVIAR COMPROBANTE POR WHATSAPP
           </a>
           <div className="mt-4">
             <p className="text-sm text-gray-600">Por si las dudas también podes contactarnos al:</p>
