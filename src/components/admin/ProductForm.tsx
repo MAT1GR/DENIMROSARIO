@@ -47,6 +47,51 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
   const defaultFaq = { question: '¿Cómo debo lavarlo?', answer: 'Recomendamos lavar del revés, con agua fría y evitar el uso de secadoras para mantener la forma y el color.' };
   const [faqs, setFaqs] = useState(product?.faqs && product.faqs.length > 0 ? product.faqs : (product ? [] : [defaultFaq]));
 
+  const handleJsonUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const jsonContent = JSON.parse(e.target?.result as string);
+        
+        const newFormData = {
+          name: jsonContent.nombre_producto || formData.name,
+          price: jsonContent.price || formData.price, // Price is not in producto_inputs.json, keep current or default
+          category: jsonContent.categoria || formData.category,
+          description: jsonContent.descripcion || formData.description,
+          material: jsonContent.material || formData.material,
+          rise: jsonContent.tiro || formData.rise,
+          rise_cm: parseFloat(jsonContent.tiro_cm) || formData.rise_cm,
+          fit: jsonContent.calce || formData.fit,
+          waist_flat: parseFloat(jsonContent.cintura_cm) || formData.waist_flat,
+          length: parseFloat(jsonContent.alto_cm) || formData.length,
+          isWaistStretchy: jsonContent.elastizado === 'Sí',
+          isNew: formData.isNew, // Keep current
+          isActive: formData.isActive, // Keep current
+        };
+        setFormData(newFormData);
+
+        if (jsonContent.preguntas_frecuentes) {
+          const newFaqs = jsonContent.preguntas_frecuentes.map((faq: any) => ({
+            question: faq.pregunta,
+            answer: faq.respuesta,
+          }));
+          setFaqs(newFaqs);
+        }
+
+        // Reset the file input value so the same file can be uploaded again if needed
+        event.target.value = '';
+
+      } catch (error) {
+        console.error("Error parsing JSON file:", error);
+        alert("Error al procesar el archivo JSON. Asegúrate de que el formato sea correcto.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const getCorrectImageUrl = (path: string) => {
     if (!path) return '';
     const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || '';
@@ -198,9 +243,11 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
       {/* Header */}
       <header className="flex-shrink-0 bg-white border-b px-8 py-4 flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-800">{product ? 'Editar Producto' : 'Nuevo Producto'}</h2>
-        <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
-          Cerrar
-        </button>
+        <div className="flex items-center space-x-4">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
+            Cerrar
+          </button>
+        </div>
       </header>
 
       {/* Form Body */}
@@ -210,6 +257,27 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
             
             {/* Columna Izquierda */}
             <div className="lg:col-span-2 space-y-8">
+              {/* JSON Import Section */}
+              { !product && (
+                <div className="p-6 bg-white border rounded-lg shadow-sm">
+                  <h3 className="text-xl font-semibold text-gray-800 mb-6">Importar desde JSON</h3>
+                  <div className="border-2 border-dashed rounded-lg p-6 text-center">
+                    <UploadCloud className="mx-auto h-10 w-10 text-gray-400" />
+                    <label htmlFor="json-upload" className="mt-2 block text-sm font-semibold text-black hover:text-gray-800 cursor-pointer">
+                      Seleccionar archivo JSON
+                      <input
+                        type="file"
+                        id="json-upload"
+                        accept=".json"
+                        className="sr-only"
+                        onChange={handleJsonUpload}
+                      />
+                    </label>
+                    <p className="text-xs leading-5 text-gray-500 mt-1">Sube un archivo .json</p>
+                  </div>
+                </div>
+              )}
+
               <div className="p-6 bg-white border rounded-lg shadow-sm">
                 <h3 className="text-xl font-semibold text-gray-800 mb-6">Información Esencial</h3>
                 <div className="space-y-4">

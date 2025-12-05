@@ -1,0 +1,23 @@
+{
+    "nombre_producto": "Jean Workwear Recto Azul Gastado - Nueva Colección",
+    "descripcion": "Descubrí el balance perfecto entre estilo y comodidad con nuestro nuevo jean de corte recto y calce relajado. Inspirado en la estética workwear, este modelo está confeccionado en denim rígido de alta calidad, garantizando durabilidad y una estructura impecable que se amolda con el uso. Su tono azul gastado y los detalles de paneles en las piernas le dan un carácter único, ideal para looks urbanos y modernos. Una pieza clave que eleva cualquier outfit.",
+    "detalles_y_medidas": "Diseño de inspiración workwear con paneles de costura horizontales en rodillas y botamangas. Bolsillos delanteros de tipo ojal y bolsillos traseros de parche amplios. Cierre con botón y presillas para cinturón. Etiqueta de cuero sintético en la cintura trasera. Las medidas específicas de este modelo son: A medir.",
+    "categoria": "Jeans",
+    "material": "Denim Rígido",
+    "calce": "Recto / Baggy",
+    "elastizado": "No",
+    "tiro": "Medio",
+    "alto_cm": "0",
+    "cintura_cm": "0",
+    "tiro_cm": "0",
+    "preguntas_frecuentes": [
+        {
+            "pregunta": "¿El calce es muy holgado? ¿Debería elegir mi talle habitual?",
+            "respuesta": "Este modelo tiene un calce recto y relajado (baggy), diseñado para ser holgado. Te recomendamos elegir tu talle habitual para lograr el look de la foto. Si preferís un ajuste más ceñido a la cadera, podrías considerar un talle menos, pero consultá siempre la guía de medidas."
+        },
+        {
+            "pregunta": "¿Al ser denim rígido, se encoge con el lavado?",
+            "respuesta": "Nuestro denim rígido está pre-lavado para minimizar el encogimiento. Para un cuidado óptimo, recomendamos lavar con agua fría y secar a la sombra. Con el uso y los lavados, la tela se ablandará y se adaptará mejor a tu cuerpo."
+        }
+    ]
+}
