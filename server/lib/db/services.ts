@@ -337,6 +337,29 @@ export const productService = {
     return changes > 0;
   },
 
+  updateOrder(items: { id: string; sort_order: number }[]): boolean {
+    const db = getDB();
+    // Begin transaction
+    db.exec("BEGIN TRANSACTION;");
+    try {
+        const stmt = db.prepare('UPDATE products SET sort_order = :sort_order WHERE id = :id');
+        for (const item of items) {
+            stmt.run({ ':sort_order': item.sort_order, ':id': Number(item.id) });
+        }
+        stmt.free();
+        // Commit transaction
+        db.exec("COMMIT;");
+        console.log(`[Reorder] Transaction committed for ${items.length} products.`);
+        saveDatabase();
+        return true;
+    } catch (e) {
+        db.exec("ROLLBACK;");
+        console.error("[Reorder] Transaction rolled back due to error:", e);
+        // Do not save database on error
+        return false;
+    }
+  },
+
   delete(productId: string): boolean {
     const db = getDB();
     db.run('DELETE FROM products WHERE id = ?', [productId]);

@@ -35,6 +35,7 @@ export function initializeSchema() {
       is_new BOOLEAN DEFAULT 0,
       is_best_seller BOOLEAN DEFAULT 0,
       is_active BOOLEAN DEFAULT 1,
+      brand TEXT,
       faqs TEXT DEFAULT '[]',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -187,6 +188,18 @@ function runMigrations() {
       console.log('[DB] Migration skipped: sort_order column already exists.');
     } else {
       console.error('[DB] Migration for sort_order column failed:', e);
+    }
+  }
+  
+  try {
+    console.log('[DB] Migration: Adding brand to products...');
+    db.run("ALTER TABLE products ADD COLUMN brand TEXT");
+    console.log('[DB] Migration applied successfully: added brand column.');
+  } catch (e: any) {
+    if (e.message && e.message.includes('duplicate column name')) {
+      console.log('[DB] Migration skipped: brand column already exists.');
+    } else {
+      console.error('[DB] Migration for brand column failed:', e);
     }
   }
   

@@ -1,65 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Product } from '../../types';
-import { Plus, Edit, Trash2, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Save, XCircle, ListOrdered } from 'lucide-react';
 import { ProductForm } from './ProductForm';
-import {
-  DndContext, 
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  DragEndEvent
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  rectSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
-// --- COMPONENTE TARJETA DRAGGABLE ---
-const SortableProductCard = ({ product, onEdit, onDelete, onToggleActive }: any) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging
-  } = useSortable({ id: product.id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    zIndex: isDragging ? 50 : 'auto',
-    opacity: isDragging ? 0.5 : 1,
-  };
-
+// --- COMPONENTE TARJETA EDITABLE ---
+const EditableProductCard = ({ product, onEdit, onDelete, onToggleActive, onOrderChange }: any) => {
+  
   const totalStock = Object.values(product.sizes || {}).reduce((acc: any, size: any) => acc + (size.stock || 0), 0);
   const imageUrl = (product.images && product.images.length > 0) ? (product.images[0].startsWith('/uploads/') ? `/api${product.images[0]}` : product.images[0]) : 'https://via.placeholder.com/400x500';
 
-  return (
-    <div ref={setNodeRef} style={style} className="bg-white rounded-lg shadow-sm border overflow-hidden relative group">
-      
-      {/* HEADER CON ORDEN Y GRIP */}
-      <div className="absolute top-0 left-0 right-0 bg-black/50 backdrop-blur-sm p-1 flex justify-between items-center z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing text-white p-1 hover:bg-white/20 rounded">
-            <GripVertical size={18} />
-        </div>
-        <span className="text-xs font-mono text-white font-bold bg-black px-2 py-0.5 rounded">
-            #{product.sort_order}
-        </span>
-      </div>
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newOrder = e.target.value === '' ? 9999 : parseInt(e.target.value, 10);
+    onOrderChange(product.id, newOrder);
+  };
 
+  return (
+    <div className="bg-white rounded-lg shadow-sm border overflow-hidden relative group">
+      
       {/* IMAGEN Y CONTENIDO */}
       <div className="relative">
         <img src={imageUrl} alt={product.name} className={`w-full h-48 object-contain ${!product.isActive ? 'grayscale' : ''}`} />
         
-        {/* BOTONES DE ACCIÓN (Siempre visibles o al hover) */}
-        <div className="absolute top-8 right-2 flex flex-col gap-2">
+        {/* BOTONES DE ACCIÓN */}
+        <div className="absolute top-2 right-2 flex flex-col gap-2">
            <button onClick={() => onToggleActive(product)} className="p-1.5 bg-white/90 shadow rounded-full text-gray-700 hover:text-black">
             {product.isActive ? <Eye size={14} /> : <EyeOff size={14} />}
           </button>
@@ -74,7 +37,18 @@ const SortableProductCard = ({ product, onEdit, onDelete, onToggleActive }: any)
 
       <div className="p-3">
         <h3 className="font-bold text-gray-800 truncate text-sm">{product.name}</h3>
-        <div className="flex justify-between items-center mt-1">
+        {/* Input para el orden */}
+        <div className="flex items-center gap-2 mt-2">
+            <ListOrdered size={16} className="text-gray-500"/>
+            <input
+              type="number"
+              value={product.sort_order === 9999 ? '' : product.sort_order}
+              onChange={handleInputChange}
+              placeholder="#"
+              className="w-full p-1 border border-gray-200 rounded-md text-sm focus:ring-black focus:border-black"
+            />
+        </div>
+        <div className="flex justify-between items-center mt-2">
           <p className="text-gray-700 font-semibold text-sm">${product.price.toLocaleString('es-AR')}</p>
           <span className={`text-xs font-bold px-2 py-1 rounded-full ${totalStock > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
             {totalStock > 0 ? `${totalStock} u.` : 'AGOTADO'}
@@ -85,6 +59,7 @@ const SortableProductCard = ({ product, onEdit, onDelete, onToggleActive }: any)
   );
 };
 
+
 // --- COMPONENTE PRINCIPAL ---
 export const ProductsTab: React.FC = () => {
   const [activeProducts, setActiveProducts] = useState<Product[]>([]); // Tienen Stock
@@ -93,12 +68,8 @@ export const ProductsTab: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-
-  // Configuración de sensores para DnD
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
+  const [orderChanged, setOrderChanged] = useState(false);
+  const [isSavingOrder, setIsSavingOrder] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -129,6 +100,7 @@ export const ProductsTab: React.FC = () => {
 
       setActiveProducts(inStock);
       setSoldProducts(outOfStock);
+      setOrderChanged(false); // Reset changed status on fetch
 
     } catch (err) {
       console.error(err);
@@ -136,36 +108,52 @@ export const ProductsTab: React.FC = () => {
       setIsLoading(false);
     }
   };
+  
+  const handleOrderChange = (productId: string, newOrderValue: number) => {
+    setActiveProducts(currentProducts => {
+      const updatedProducts = currentProducts.map(p => 
+        p.id === productId ? { ...p, sort_order: newOrderValue } : p
+      );
+      updatedProducts.sort((a, b) => (a.sort_order || 9999) - (b.sort_order || 9999));
+      return updatedProducts;
+    });
+    setOrderChanged(true);
+  };
 
-  const handleDragEnd = async (event: DragEndEvent) => {
-    const { active, over } = event;
+  const handleSaveOrder = async () => {
+    setIsSavingOrder(true);
+    // The sort_order is already in the state from the input fields
+    const itemsToSend = activeProducts.map(p => ({ id: p.id, sort_order: p.sort_order }));
 
-    if (over && active.id !== over.id) {
-      const oldIndex = activeProducts.findIndex((p) => p.id === active.id);
-      const newIndex = activeProducts.findIndex((p) => p.id === over.id);
+    try {
+      const response = await fetch('/api/products/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: itemsToSend })
+      });
 
-      const newOrder = arrayMove(activeProducts, oldIndex, newIndex);
-      
-      const updatedProducts = newOrder.map((p, index) => ({
-        ...p,
-        sort_order: index
-      }));
-
-      setActiveProducts(updatedProducts);
-
-      try {
-        const itemsToSend = updatedProducts.map(p => ({ id: p.id, sort_order: p.sort_order }));
-        await fetch('/api/products/reorder', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: itemsToSend })
-        });
-      } catch (error) {
-        console.error("Error guardando el orden:", error);
-        alert("Error al guardar el orden");
-        // Optionally revert state on error
-        fetchProducts();
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'El servidor respondió con un error.');
       }
+      
+      alert("Orden guardado con éxito.");
+      setOrderChanged(false);
+      // Optional: re-fetch to confirm from server
+      await fetchProducts();
+      
+    } catch (error) {
+      console.error("Error guardando el orden:", error);
+      alert(`Error al guardar el orden: ${error instanceof Error ? error.message : 'Error desconocido'}. El orden se revertirá.`);
+      await fetchProducts(); // Revert on error
+    } finally {
+      setIsSavingOrder(false);
+    }
+  };
+  
+  const handleCancelOrder = () => {
+    if (window.confirm("¿Descartar los cambios en el orden?")) {
+      fetchProducts(); // Re-fetches original order from server
     }
   };
 
@@ -251,28 +239,37 @@ export const ProductsTab: React.FC = () => {
 
       {isLoading ? <div>Cargando...</div> : (
         <>
-          {/* SECCIÓN ACTIVA (DRAGGABLE) */}
+          {/* SECCIÓN ACTIVA */}
           <div className="mb-12">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                🟢 En Vidriera (Orden Manual)
-                <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Arrastrá para ordenar</span>
-            </h3>
-            
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={activeProducts.map(p => p.id)} strategy={rectSortingStrategy}>
-                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                  {activeProducts.map((product) => (
-                    <SortableProductCard 
-                      key={product.id} 
-                      product={product}
-                      onEdit={handleOpenForm}
-                      onDelete={handleDeleteProduct}
-                      onToggleActive={handleToggleActive}
-                    />
-                  ))}
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold flex items-center gap-2">
+                  🟢 En Vidriera (Orden Manual)
+                  <span className="text-xs font-normal text-gray-500 bg-gray-100 px-2 py-1 rounded">Editá el # para ordenar</span>
+              </h3>
+              {orderChanged && (
+                <div className="flex items-center gap-2 animate-fade-in">
+                  <button onClick={handleCancelOrder} disabled={isSavingOrder} className="px-3 py-1.5 text-sm rounded-md text-gray-600 hover:bg-gray-100 disabled:opacity-50 flex items-center gap-1.5">
+                    <XCircle size={16} /> Cancelar
+                  </button>
+                  <button onClick={handleSaveOrder} disabled={isSavingOrder} className="px-3 py-1.5 text-sm rounded-md bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 flex items-center gap-1.5">
+                    <Save size={16} /> {isSavingOrder ? 'Guardando...' : 'Guardar Orden'}
+                  </button>
                 </div>
-              </SortableContext>
-            </DndContext>
+              )}
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {activeProducts.map((product) => (
+                <EditableProductCard 
+                  key={product.id} 
+                  product={product}
+                  onEdit={handleOpenForm}
+                  onDelete={handleDeleteProduct}
+                  onToggleActive={handleToggleActive}
+                  onOrderChange={handleOrderChange}
+                />
+              ))}
+            </div>
 
             {activeProducts.length === 0 && <p className="text-gray-400 italic">No hay productos activos.</p>}
           </div>

@@ -216,7 +216,8 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
         if (typeof value === 'string') sizeToUpdate.size = value;
         break;
       case 'stock':
-        if (typeof value === 'number') sizeToUpdate.stock = value;
+        const stockValue = Number(value);
+        sizeToUpdate.stock = isNaN(stockValue) ? 0 : Math.max(0, Math.floor(stockValue));
         break;
       case 'available':
         if (typeof value === 'boolean') sizeToUpdate.available = value;

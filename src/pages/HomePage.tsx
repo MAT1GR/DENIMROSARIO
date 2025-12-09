@@ -180,7 +180,7 @@ const HomePage: React.FC = () => {
         onSubscribe={handleSubscribe}
       />
 
-      <div className={`bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white transition-all duration-300 ${isModalOpen ? 'blur-sm' : ''}`}>
+      <div className={`bg-gradient-to-b from-[#0d0d0d] to-[#1a1a1a] text-white transition-all duration-300 ${isModalOpen ? '' : ''}`}>
                     <section
                       className="min-h-[70vh] lg:min-h-screen relative flex flex-col items-center justify-center text-center px-4 py-20 lg:py-32"
                     >
@@ -344,10 +344,9 @@ const HomePage: React.FC = () => {
             </div>
           </div>
         </section>
-
-        <InstagramFeed />
-                
-              </div>    </>
+      </div>
+      <InstagramFeed />
+    </>
   );
 };
 

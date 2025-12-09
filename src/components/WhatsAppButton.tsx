@@ -17,10 +17,10 @@ const WhatsAppButton: React.FC<{ message?: string }> = ({ message: propMessage }
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-transform hover:scale-110 z-50 flex items-center justify-center"
+      className="fixed bottom-6 right-6 bg-[#25D366] text-white w-12 h-12 rounded-full shadow-lg hover:bg-green-600 transition-transform hover:scale-110 z-50 flex items-center justify-center"
       aria-label="Contactar por WhatsApp"
     >
-      <img src={WhatsAppLogo} alt="WhatsApp Logo" style={{ height: '28px', width: '28px' }} />
+      <img src={WhatsAppLogo} alt="WhatsApp Logo" className="w-7 h-7" />
     </a>
   );
 };
