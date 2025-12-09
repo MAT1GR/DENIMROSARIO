@@ -7,6 +7,7 @@ import { db } from '../lib/database.js';
 import "dotenv/config";
 import { CartItem } from "../../server/types/index.js";
 import { sendEmail } from '../emailService.js';
+import { getTransferInstructionEmail, getOrderConfirmationEmail } from '../lib/emailTemplates.js';
 
 const router = Router();
 
@@ -216,6 +217,25 @@ const processPayment = async (req: Request, res: Response) => {
         db.customers.updateTotalSpent(order.customerId, paymentResult.transaction_amount || order.total);
         console.log(`✅ Orden ${orderId} PAGADA.`);
 
+        // --- Send Order Confirmation Email ---
+        const itemsHtml = `
+          <ul style="list-style: none; padding: 0;">
+            ${order.items.map((item: any) => `
+              <li style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                <strong>${item.product.name}</strong> (Talle: ${item.size})
+                <br>
+                <span>${item.quantity} x $${item.product.price.toLocaleString('es-AR')}</span>
+              </li>
+            `).join('')}
+          </ul>
+        `;
+        const emailHtml = getOrderConfirmationEmail(order.customerName, orderId, itemsHtml);
+        sendEmail(
+            order.customerEmail,
+            `¡Confirmado! Tu pedido #${orderId} ya es tuyo 🎉`,
+            emailHtml
+        );
+
         // --- Send Meta Conversion API Purchase Event ---
         try {
             const hashedEmail = order.customerEmail ? hashSha256(order.customerEmail) : undefined;
@@ -333,32 +353,13 @@ const createTransferOrder = async (req: Request, res: Response) => {
         console.error('Error sending Meta Conversion API InitiateCheckout event (Transfer):', metaError);
     }
 
-    const settings = db.settings.getAll();
-    const bankDetails = {
-        cvu: settings.transfer_cvu?.value || 'No disponible',
-        alias: settings.transfer_alias?.value || 'No disponible',
-        titular: settings.transfer_titular?.value || 'No disponible',
-    };
+    const emailHtml = getTransferInstructionEmail(shippingInfo.firstName, finalTotal, newOrderId.toString());
 
-    const emailSubject = `Datos para tu pago - Pedido #${newOrderId}`;
-    const emailHtml = `
-        <div style="font-family: Arial, sans-serif; color: #333;">
-            <h1>¡Gracias por tu compra, ${shippingInfo.firstName}!</h1>
-            <p>Para completar tu pedido, realiza la transferencia con los siguientes datos:</p>
-            <h3>Datos de la cuenta:</h3>
-            <ul>
-                <li><strong>CVU:</strong> ${bankDetails.cvu}</li>
-                <li><strong>Alias:</strong> ${bankDetails.alias}</li>
-                <li><strong>Titular:</strong> ${bankDetails.titular}</li>
-            </ul>
-            <p><strong>Total a transferir: $${finalTotal.toLocaleString('es-AR')}</strong></p>
-            <p>Una vez realizada la transferencia, no te olvides de enviarnos el comprobante por WhatsApp para que podamos procesar tu envío.</p>
-            <hr/>
-            <p>Te recordamos que tenés 15 minutos para realizar el pago o la orden se cancelará automáticamente.</p>
-        </div>
-    `;
-
-    sendEmail(shippingInfo.email, emailSubject, emailHtml);
+    sendEmail(
+        shippingInfo.email,
+        `⏳ Tenés 15 minutos: Instrucciones para tu Pedido #${newOrderId}`,
+        emailHtml
+    );
 
     res.status(201).json({ id: newOrderId.toString(), order: db.orders.getById(newOrderId.toString()) });
 

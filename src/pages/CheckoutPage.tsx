@@ -73,6 +73,30 @@ const CheckoutPage: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleEmailBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const email = e.target.value;
+    // Simple email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (email && emailRegex.test(email) && cartItems.length > 0) {
+      try {
+        await fetch('/api/carts/capture', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            cartItems: cartItems,
+          }),
+        });
+        // This is a "fire and forget" request, no need to handle response
+      } catch (error) {
+        console.error('Error capturing abandoned cart:', error);
+      }
+    }
+  };
+
   // Auto-cálculo de envío cuando cambia el CP
   const handleCalculateShipping = useCallback(async () => {
     if (formData.postalCode.length < 4 || settingsLoading) return;
@@ -174,7 +198,7 @@ const CheckoutPage: React.FC = () => {
             <form className="space-y-8" onSubmit={(e) => e.preventDefault()}>
               <fieldset>
                 <legend className="text-xl font-bold mb-4 text-gris-oscuro">1. DATOS DE CONTACTO</legend>
-                <InputField name="email" placeholder="E-mail" value={formData.email} onChange={handleChange} required type="email" />
+                <InputField name="email" placeholder="E-mail" value={formData.email} onChange={handleChange} onBlur={handleEmailBlur} required type="email" />
               </fieldset>
 
               <fieldset className="space-y-4">

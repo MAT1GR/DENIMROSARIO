@@ -77,6 +77,8 @@ import shippingRoutes from './routes/shipping.js';
 import notificationRoutes from './routes/notifications.js';
 import analyticsRoutes from './routes/analytics.js';
 import paymentRoutes from './controllers/paymentController.js';
+import cartRoutes from './routes/cart.js';
+import { processAbandonedCarts } from './controllers/cartController.js';
 
 const app = express();
 
@@ -102,6 +104,7 @@ app.use('/api/shipping', shippingRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/carts', cartRoutes);
 
 // --- Debug Endpoint ---
 app.get("/api/debug/db", (req, res) => {
@@ -115,4 +118,11 @@ app.get("/api/debug/db", (req, res) => {
 
 // --- Puerto ---
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+    
+    // --- Abandoned Cart Scheduler ---
+    const oneHour = 60 * 60 * 1000;
+    setInterval(processAbandonedCarts, oneHour);
+    console.log('[Scheduler] Abandoned cart job started. Will run every hour.');
+});

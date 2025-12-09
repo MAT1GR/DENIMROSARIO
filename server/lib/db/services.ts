@@ -671,3 +671,48 @@ export const analyticsService = {
     return funnel;
   },
 };
+
+export const cartService = {
+  createOrUpdateAbandonedCart(email: string, cartItems: CartItem[]): number {
+    const db = getDB();
+    
+    // Check if a pending cart for this email already exists
+    const existingStmt = db.prepare("SELECT id FROM abandoned_carts WHERE email = ? AND status = 'pending'");
+    const existingCart = existingStmt.getAsObject([email]);
+    existingStmt.free();
+
+    if (existingCart && existingCart.id) {
+      // Update existing cart
+      const stmt = db.prepare("UPDATE abandoned_carts SET cart_items = ?, created_at = CURRENT_TIMESTAMP WHERE id = ?");
+      stmt.run([JSON.stringify(cartItems), existingCart.id]);
+      stmt.free();
+      saveDatabase();
+      return existingCart.id as number;
+    } else {
+      // Insert new cart
+      const stmt = db.prepare("INSERT INTO abandoned_carts (email, cart_items) VALUES (?, ?)");
+      stmt.run([email, JSON.stringify(cartItems)]);
+      stmt.free();
+      const id = toObjects(db.exec("SELECT last_insert_rowid() as id"))[0].id;
+      saveDatabase();
+      return id;
+    }
+  },
+
+  getPendingAbandonedCarts(): any[] {
+    const db = getDB();
+    // Get carts older than 1 hour but less than 2 hours to avoid re-sending constantly
+    const rows = toObjects(db.exec("SELECT * FROM abandoned_carts WHERE status = 'pending' AND created_at < datetime('now', '-1 hour') AND created_at > datetime('now', '-2 hour')"));
+    return rows;
+  },
+
+  updateAbandonedCartStatus(cartId: number, status: string): boolean {
+    const db = getDB();
+    const stmt = db.prepare("UPDATE abandoned_carts SET status = ? WHERE id = ?");
+    stmt.run([status, cartId]);
+    stmt.free();
+    const changes = db.getRowsModified();
+    saveDatabase();
+    return changes > 0;
+  }
+};
