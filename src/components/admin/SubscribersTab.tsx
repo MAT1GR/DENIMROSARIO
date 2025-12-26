@@ -53,16 +53,29 @@ const SubscribersTab: React.FC = () => {
             </thead>
             <tbody>
               {subscribers.length > 0 ? (
-                subscribers.map((subscriber, index) => (
-                  <tr key={index} className="bg-white border-b hover:bg-gray-50">
-                    <td className="px-6 py-4 font-medium text-gray-900">
-                      {subscriber.name}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-gray-900">
-                      {subscriber.phone || subscriber.email}
-                    </td>
-                  </tr>
-                ))
+                subscribers.map((subscriber, index) => {
+                  const isPlaceholderEmail = subscriber.email && subscriber.email.includes('placeholder.denimrosario.com');
+                  const displayContact = subscriber.phone || (!isPlaceholderEmail ? subscriber.email : 'Sin contacto');
+
+                  return (
+                    <tr key={index} className="bg-white border-b hover:bg-gray-50">
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        {subscriber.name}
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-900">
+                        {subscriber.phone ? (
+                          <span className="flex items-center gap-2">
+                             WhatsApp: {subscriber.phone}
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-2">
+                             Email: {displayContact}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={2} className="px-6 py-4 text-center">

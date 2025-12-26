@@ -290,9 +290,11 @@ const ProductPage: React.FC = () => {
                   </h1>
   
                   <p className="text-3xl mt-2 font-bold">${product.price.toLocaleString('es-AR')}</p>
-                  <p className="text-base text-gray-600 mt-2">
-                    Jean de calce relajado, tiro medio y denim firme para uso diario.
-                  </p>
+                  {product.short_description && (
+                    <p className="text-base text-gray-600 mt-2">
+                      {product.short_description}
+                    </p>
+                  )}
   
                                                         
   

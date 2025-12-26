@@ -25,9 +25,13 @@ export const SettingsTab: React.FC = () => {
 
         setIsSaving(true);
         try {
+            const token = localStorage.getItem('auth_token');
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
             const res = await fetch('/api/auth/change-password', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({
                     username: user.username,
                     oldPassword,

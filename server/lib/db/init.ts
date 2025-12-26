@@ -36,6 +36,7 @@ export function initializeSchema() {
       is_best_seller BOOLEAN DEFAULT 0,
       is_active BOOLEAN DEFAULT 1,
       brand TEXT,
+      short_description TEXT,
       faqs TEXT DEFAULT '[]',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -96,6 +97,7 @@ export function initializeSchema() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
+      phone TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -200,6 +202,18 @@ function runMigrations() {
       console.log('[DB] Migration skipped: brand column already exists.');
     } else {
       console.error('[DB] Migration for brand column failed:', e);
+    }
+  }
+
+  try {
+    console.log('[DB] Migration: Adding short_description to products...');
+    db.run("ALTER TABLE products ADD COLUMN short_description TEXT");
+    console.log('[DB] Migration applied successfully: added short_description column.');
+  } catch (e: any) {
+    if (e.message && e.message.includes('duplicate column name')) {
+      console.log('[DB] Migration skipped: short_description column already exists.');
+    } else {
+      console.error('[DB] Migration for short_description column failed:', e);
     }
   }
 

@@ -49,9 +49,12 @@ export const useAuthProvider = () => {
       });
 
       if (response.ok) {
-        const { user: loggedInUser } = await response.json();
+        const { user: loggedInUser, token } = await response.json();
         setUser(loggedInUser);
         localStorage.setItem('admin_user', JSON.stringify(loggedInUser));
+        if (token) {
+            localStorage.setItem('auth_token', token);
+        }
         return true;
       }
       return false;
@@ -64,6 +67,7 @@ export const useAuthProvider = () => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('auth_token');
   };
 
   return {

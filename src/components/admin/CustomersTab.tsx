@@ -24,7 +24,11 @@ export const CustomersTab: React.FC = () => {
         if (term) params.append('searchTerm', term);
 
         try {
-            const res = await fetch(`/api/customers?${params.toString()}`);
+            const token = localStorage.getItem('auth_token');
+            const headers: HeadersInit = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            const res = await fetch(`/api/customers?${params.toString()}`, { headers });
             const data = await res.json();
             setCustomers(data.customers || []);
             setTotalPages(data.totalPages || 1);

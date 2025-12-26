@@ -24,6 +24,7 @@ export interface Product {
   isActive: boolean;
   faqs?: { question: string; answer: string }[];
   brand?: string;
+  short_description?: string;
   sort_order?: number;
 }
 

@@ -14,6 +14,7 @@ import {
   getAllAdminProducts,
   reorderProducts
 } from '../controllers/productController.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -51,10 +52,10 @@ const upload = multer({ storage: storage, fileFilter: fileFilter });
 // --- RUTAS ---
 
 router.get('/', getAllProducts);
-router.get('/all', getAllAdminProducts);
+router.get('/all', authenticateToken, getAllAdminProducts);
 router.get('/newest', getNewProducts);
 router.get('/bestsellers', getBestsellerProducts);
-router.post('/reorder', reorderProducts);
+router.post('/reorder', authenticateToken, reorderProducts);
 router.get('/:id', getProductById);
 
 // Aplicamos el middleware 'upload' para crear y actualizar productos
@@ -62,8 +63,8 @@ const uploadFields = upload.fields([
   { name: 'newImages', maxCount: 10 },
   { name: 'video', maxCount: 1 }
 ]);
-router.post('/', uploadFields, createProduct);
-router.put('/:id', uploadFields, updateProduct);
-router.delete('/:id', deleteProduct);
+router.post('/', authenticateToken, uploadFields, createProduct);
+router.put('/:id', authenticateToken, uploadFields, updateProduct);
+router.delete('/:id', authenticateToken, deleteProduct);
 
 export default router;

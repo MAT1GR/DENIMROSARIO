@@ -35,7 +35,11 @@ export const OrdersTab: React.FC = () => {
             if (statusFilter) params.append('status', statusFilter);
 
             try {
-                const res = await fetch(`/api/orders?${params.toString()}`);
+                const token = localStorage.getItem('auth_token');
+                const headers: HeadersInit = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch(`/api/orders?${params.toString()}`, { headers });
                 const data = await res.json();
                 setOrders(data.orders || []);
                 setTotalPages(data.totalPages || 1);
@@ -55,9 +59,13 @@ export const OrdersTab: React.FC = () => {
 
     const handleStatusChange = async (orderId: string, newStatus: string) => {
         try {
+            const token = localStorage.getItem('auth_token');
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
             const res = await fetch(`/api/orders/${orderId}/status`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify({ status: newStatus }),
             });
             if (!res.ok) throw new Error('Error al actualizar estado');

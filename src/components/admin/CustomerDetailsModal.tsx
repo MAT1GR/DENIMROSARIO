@@ -16,7 +16,11 @@ export const CustomerDetailsModal: React.FC<CustomerDetailsModalProps> = ({ cust
   useEffect(() => {
     const fetchCustomerOrders = async () => {
       try {
-        const res = await fetch(`/api/customers/${customer.id}/orders`);
+        const token = localStorage.getItem('auth_token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        const res = await fetch(`/api/customers/${customer.id}/orders`, { headers });
         const data = await res.json();
         setOrders(data);
       } catch (err) {

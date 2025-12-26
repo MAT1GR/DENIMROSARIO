@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import { db } from '../lib/database.js';
+import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-default-secret-key-change-me';
 
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
@@ -11,7 +13,8 @@ export const login = async (req: Request, res: Response) => {
     const user = await db.auth.authenticateAdmin(username, password);
     
     if (user) {
-      res.json({ user });
+      const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '24h' });
+      res.json({ user, token });
     } else {
       res.status(401).json({ message: 'Credenciales inválidas' });
     }

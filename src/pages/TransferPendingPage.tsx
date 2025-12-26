@@ -13,6 +13,7 @@ import { Order } from "../types";
 import { useCart } from "../hooks/useCart";
 import { StockCountdownTimer } from "../components/StockCountdownTimer";
 import { useSettings } from "../hooks/useSettings";
+import { track } from '../lib/meta';
 
 const TransferPendingPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -56,6 +57,25 @@ const TransferPendingPage: React.FC = () => {
       setLoading(false);
     }
   }, [id, order, location.state]);
+
+  useEffect(() => {
+    if (order) {
+      const eventId = sessionStorage.getItem('meta_event_id');
+      track('Purchase', {
+        value: order.total,
+        currency: 'ARS',
+        num_items: order.items.reduce((sum, item) => sum + item.quantity, 0),
+        content_ids: order.items.map(item => item.product.id),
+        contents: order.items.map(item => ({
+          id: item.product.id,
+          quantity: item.quantity,
+          item_price: item.product.price
+        })),
+        content_type: 'product',
+        order_id: order.id,
+      }, eventId || undefined);
+    }
+  }, [order]);
 
   const handleCopy = (text: string, field: string) => {
     navigator.clipboard.writeText(text);

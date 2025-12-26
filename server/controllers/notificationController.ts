@@ -4,13 +4,17 @@ import { db } from '../lib/database.js';
 
 export const subscribeToDrop = async (req: Request, res: Response) => {
   const { name, phone } = req.body;
+  console.log('[Notification] Subscribe request received:', { name, phone });
 
-  if (!name || !phone) {
-    return res.status(400).json({ message: 'El nombre y el número son requeridos.' });
+  if (!phone) {
+    return res.status(400).json({ message: 'El número de WhatsApp es requerido.' });
   }
 
+  const subscriberName = name || 'Suscriptor';
+
   try {
-    const success = await db.notifications.subscribe(name, phone);
+    const success = await db.notifications.subscribe(subscriberName, phone);
+    console.log('[Notification] Subscription result:', success ? 'Success' : 'Already subscribed');
     if (success) {
       res.status(201).json({ message: '¡Gracias por suscribirte! Te avisaremos.' });
     } else {

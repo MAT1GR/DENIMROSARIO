@@ -75,6 +75,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
     price: product?.price || 0,
     category: product?.category || '',
     description: product?.description || '',
+    short_description: product?.short_description || '',
     material: product?.material || '',
     rise: product?.rise || 'Medio',
     rise_cm: product?.rise_cm || 0,
@@ -358,6 +359,10 @@ export const ProductForm: React.FC<ProductFormProps> = ({ product, onClose, onSa
                   <div>
                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Nombre del Producto <span className="text-red-500">*</span></label>
                     <input id="name" name="name" value={formData.name} onChange={handleChange} placeholder="Ej: Jean Mom Fit Vintage" className="w-full p-2 border border-gray-300 rounded-md focus:ring-black focus:border-black" required />
+                  </div>
+                  <div>
+                    <label htmlFor="short_description" className="block text-sm font-medium text-gray-700 mb-1">Descripción Corta (aparece abajo del precio)</label>
+                    <input id="short_description" name="short_description" value={formData.short_description} onChange={handleChange} placeholder="Ej: Jean de calce relajado, tiro medio..." className="w-full p-2 border border-gray-300 rounded-md focus:ring-black focus:border-black" />
                   </div>
                   <div>
                     <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Descripción <span className="text-red-500">*</span></label>

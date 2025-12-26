@@ -78,7 +78,11 @@ export const ProductsTab: React.FC = () => {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/products/all');
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const res = await fetch('/api/products/all', { headers });
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
 
@@ -126,9 +130,13 @@ export const ProductsTab: React.FC = () => {
     const itemsToSend = activeProducts.map(p => ({ id: p.id, sort_order: p.sort_order }));
 
     try {
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch('/api/products/reorder', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: headers,
         body: JSON.stringify({ items: itemsToSend })
       });
 
@@ -173,8 +181,13 @@ export const ProductsTab: React.FC = () => {
     const url = editingProduct ? `/api/products/${editingProduct.id}` : '/api/products';
 
     try {
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       const response = await fetch(url, {
         method,
+        headers,
         body: data,
       });
 
@@ -194,7 +207,14 @@ export const ProductsTab: React.FC = () => {
   const handleDeleteProduct = async (productId: string) => {
     if (!window.confirm('¿Estás seguro de que quieres eliminar este producto? Esta acción es irreversible.')) return;
     try {
-      const response = await fetch(`/api/products/${productId}`, { method: 'DELETE' });
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const response = await fetch(`/api/products/${productId}`, { 
+        method: 'DELETE',
+        headers
+      });
       if (!response.ok) throw new Error('Error al eliminar');
       
       await fetchProducts();
@@ -213,8 +233,13 @@ export const ProductsTab: React.FC = () => {
     formData.append('isActive', String(isActive));
   
     try {
+       const token = localStorage.getItem('auth_token');
+       const headers: HeadersInit = {};
+       if (token) headers['Authorization'] = `Bearer ${token}`;
+
        const response = await fetch(`/api/products/${product.id}`, {
         method: 'PUT',
+        headers,
         body: formData,
       });
 

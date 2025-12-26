@@ -117,7 +117,11 @@ export const DashboardTab: React.FC = () => {
         const fetchStats = async () => {
             setIsLoading(true);
             try {
-                const res = await fetch('/api/dashboard/stats');
+                const token = localStorage.getItem('auth_token');
+                const headers: HeadersInit = {};
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                const res = await fetch('/api/dashboard/stats', { headers });
                 if (!res.ok) {
                     throw new Error(`Error: ${res.status}`);
                 }
