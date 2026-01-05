@@ -76,6 +76,7 @@ export interface Order {
   shippingDetails: string | null;
   paymentMethod: string;
   createdAt: Date;
+  eventId?: string;
 }
 
 export interface Testimonial {

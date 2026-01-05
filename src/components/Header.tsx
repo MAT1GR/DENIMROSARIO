@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X, User, Search } from "lucide-react";
 import { useCart } from "../hooks/useCart.tsx";
+import logo from "../assets/LOGO.webp";
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -42,8 +43,8 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
 
   const headerClasses = `
     fixed top-0 left-0 right-0 z-40 transition-all duration-300
-    ${isScrolled ? "bg-white/90 backdrop-blur-lg shadow-sm" : "bg-transparent"}
-    ${isHomePage && !isScrolled ? "text-white" : "text-black"}
+    ${isScrolled ? "bg-blanco-hueso/95 backdrop-blur-lg shadow-sm" : "bg-blanco-hueso"}
+    text-gris-oscuro
   `;
 
   const linkClasses = `
@@ -51,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
     relative after:content-[''] after:absolute after:w-full after:h-[1px] 
     after:bottom-[-4px] after:left-0 after:bg-current after:transition-transform 
     after:duration-300
-    ${isScrolled ? "text-black" : isHomePage ? "text-white" : "text-black"}
+    text-gris-oscuro
   `;
 
   return (
@@ -79,13 +80,13 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
             </div>
 
             {/* Logo (Centro) */}
-            <div className="md:flex-none flex-1 text-center md:text-left">
-              <Link
-                to="/"
-                className="font-poppins text-2xl tracking-[0.2em] uppercase inline-block"
-              >
-                <span className="font-semibold">denim</span>
-                <span className="font-light opacity-80">rosario</span>
+            <div className="md:flex-none flex-1 text-center md:text-left flex justify-center md:justify-start">
+              <Link to="/">
+                <img 
+                  src={logo} 
+                  alt="Denim Rosario" 
+                  className="h-12 w-auto object-contain"
+                />
               </Link>
             </div>
 
@@ -99,7 +100,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
               >
                 <ShoppingCart size={20} />
                 {totalItems > 0 && (
-                  <span className={`absolute top-0 right-0 text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold ${isScrolled || !isHomePage ? 'bg-black text-white' : 'bg-white text-black'}`}>
+                  <span className="absolute top-0 right-0 text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-bold bg-gris-oscuro text-blanco-hueso">
                     {totalItems}
                   </span>
                 )}
@@ -125,13 +126,13 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
         onClick={() => setIsMenuOpen(false)}
       >
         <div
-          className={`absolute top-0 right-0 h-full w-3/4 max-w-xs bg-white shadow-xl p-6 transition-transform duration-300 ${
+          className={`absolute top-0 right-0 h-full w-3/4 max-w-xs bg-blanco-hueso shadow-xl p-6 transition-transform duration-300 ${
             isMenuOpen ? "translate-x-0" : "translate-x-full"
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex justify-end items-center mb-12">
-            <button onClick={() => setIsMenuOpen(false)} className="p-2 text-black">
+            <button onClick={() => setIsMenuOpen(false)} className="p-2 text-gris-oscuro">
               <X />
             </button>
           </div>
@@ -140,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`text-2xl font-bold font-poppins text-black ${
+                className={`text-2xl font-bold font-poppins text-gris-oscuro uppercase tracking-tighter ${
                   location.pathname === link.href ? "underline" : ""
                 }`}
               >

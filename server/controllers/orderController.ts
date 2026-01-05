@@ -4,7 +4,7 @@ import { sendMetaConversionEvent } from '../lib/metaConversionService.js';
 import { hashSha256 } from '../lib/utils.js';
 import { sendEmail, sendNewOrderAdminNotification } from '../emailService.js'; // Importa tu servicio de email
 import { getShippedCadeteEmail, getShippedCorreoEmail, getOrderCancelledEmail, getOrderDeliveredAdminEmail, getOrderPaidEmail } from '../lib/emailTemplates.js';
-import { Order, CartItem } from '../../types/index.js'; // Import Order and CartItem types
+import { Order, CartItem } from '../types/index.js'; // Import Order and CartItem types
 
 // Define a more specific type for order when shippingMethod is accessed
 interface OrderWithShippingDetails extends Order {

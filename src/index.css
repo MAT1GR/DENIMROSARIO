@@ -7,6 +7,12 @@
 */
 @import "tailwindcss";
 
+@theme {
+  --color-gris-oscuro: #4A3728; /* Dark Brown from Logo */
+  --color-blanco-hueso: #F5F0E4; /* Main parchment color */
+  --color-blanco-hueso-oscuro: #EBE6DA; /* Slightly darker parchment for contrast */
+}
+
 /* Base styles personalizados */
 @layer base {
   html {
@@ -18,10 +24,9 @@
 
     /* PASO CLAVE:
       Usamos las variables CSS que Tailwind v4 crea automáticamente.
-      (Ya no se usa theme())
     */
-    color: var(--color-grisoscuro);
-    background-color: var(--color-blancoHueso);
+    color: var(--color-gris-oscuro);
+    background-color: var(--color-blanco-hueso);
     @apply antialiased;
 
     -moz-osx-font-smoothing: grayscale;

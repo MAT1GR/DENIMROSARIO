@@ -27,7 +27,7 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
     <>
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity duration-300 ${
+        className={`fixed inset-0 bg-gris-oscuro/40 backdrop-blur-sm z-50 transition-opacity duration-300 ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={onClose}
@@ -35,25 +35,24 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col ${
+        className={`fixed top-0 right-0 h-full w-full max-w-md bg-blanco-hueso shadow-xl z-50 transform transition-transform duration-300 ease-in-out flex flex-col text-gris-oscuro ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="flex justify-between items-center p-6 border-b">
-          <h2 className="text-2xl font-bold">Tu Carrito</h2>
-          <button onClick={onClose} className="p-2">
+        <div className="flex justify-between items-center p-6 border-b border-gris-oscuro/10">
+          <h2 className="text-2xl font-bold uppercase tracking-tight">Tu Carrito</h2>
+          <button onClick={onClose} className="p-2 hover:opacity-70 transition-opacity">
             <X size={24} />
           </button>
         </div>
 
         {cartItems.length === 0 ? (
           <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
-            <p className="text-xl text-gray-600 mb-8">Tu carrito está vacío</p>
+            <p className="text-xl opacity-60 mb-8 font-medium">Tu carrito está vacío</p>
             <Link
               to="/tienda"
               onClick={onClose}
-              // CORRECCIÓN DE VISIBILIDAD: Cambiado a bg-black
-              className="inline-flex items-center gap-2 bg-black hover:bg-gray-800 text-white px-8 py-3 rounded-lg font-medium transition-colors group"
+              className="inline-flex items-center gap-2 bg-gris-oscuro hover:opacity-90 text-blanco-hueso px-8 py-3 rounded-sm font-bold uppercase tracking-wider transition-all group"
             >
               Ver productos
               <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
@@ -71,13 +70,13 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                   <img
                     src={getCorrectImageUrl(item.product.images[0])}
                     alt={item.product.name}
-                    className="w-24 h-32 object-cover rounded-lg"
+                    className="w-24 h-32 object-cover rounded-sm bg-gris-oscuro/5"
                   />
                   <div className="flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <h3 className="font-medium">{item.product.name}</h3>
-                        <p className="text-gray-600 text-sm">
+                        <h3 className="font-bold uppercase text-sm tracking-tight leading-tight">{item.product.name}</h3>
+                        <p className="opacity-60 text-xs mt-1">
                           Talle: {item.size}
                         </p>
                       </div>
@@ -85,25 +84,25 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
                         onClick={() =>
                           removeFromCart(item.product.id, item.size)
                         }
-                        className="text-red-500 hover:text-red-700 transition-colors p-1"
+                        className="text-gris-oscuro/40 hover:text-gris-oscuro transition-colors p-1"
                       >
                         <Trash2 size={16} />
                       </button>
                     </div>
                     <div className="flex justify-between items-center mt-4">
-                      <div className="flex items-center border border-gray-300 rounded-md">
+                      <div className="flex items-center border border-gris-oscuro/20 rounded-sm">
                         <button 
                           onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
                           disabled={item.quantity <= 1}
-                          className="px-2 py-1 disabled:opacity-50"
+                          className="px-2 py-1 disabled:opacity-30"
                         >
                           <Minus size={14} />
                         </button>
-                        <span className="px-3 text-sm font-medium">{item.quantity}</span>
+                        <span className="px-3 text-sm font-bold">{item.quantity}</span>
                         <button 
                           onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
                           disabled={item.quantity >= item.product.sizes[item.size].stock}
-                          className="px-2 py-1 disabled:opacity-50"
+                          className="px-2 py-1 disabled:opacity-30"
                         >
                           <Plus size={14} />
                         </button>
@@ -121,27 +120,26 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
             </div>
 
             {/* Footer Section (Fixed at the bottom) */}
-            <div className="p-6 border-t bg-white">
+            <div className="p-6 border-t border-gris-oscuro/10 bg-blanco-hueso">
               
               <div className="flex justify-between items-center text-lg">
-                <span className="font-bold">Subtotal</span>
+                <span className="font-bold uppercase tracking-tight">Subtotal</span>
                 <span className="font-bold">
                   ${total.toLocaleString("es-AR")}
                 </span>
               </div>
-              <p className="text-right text-sm text-gray-500 mt-1 mb-4">
-                O 3 cuotas de ${" "}
+              <p className="text-right text-xs opacity-60 mt-1 mb-6">
+                O 3 cuotas sin interés de ${" "}
                 {(total / 3).toLocaleString("es-AR", {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
+                  maximumFractionDigits: 0,
                 })}
               </p>
 
               {/* Aviso de Envío Gratis en el Footer del Carrito */}
               {total > 0 && (
-                <div className="text-center text-sm mb-4 bg-green-50 p-3 rounded-lg border border-green-100">
-                  <p className="font-bold text-green-800 flex items-center justify-center gap-2">
-                    <Truck size={18} /> TENÉS ENVÍO GRATIS.
+                <div className="text-center text-[10px] mb-6 bg-gris-oscuro text-blanco-hueso p-2 rounded-sm font-black uppercase tracking-widest">
+                  <p className="flex items-center justify-center gap-2">
+                    <Truck size={14} /> ENVÍO GRATIS INCLUIDO.
                   </p>
                 </div>
               )}
@@ -149,18 +147,17 @@ const CartSidebar: React.FC<CartSidebarProps> = ({ isOpen, onClose }) => {
               <Link
                 to="/checkout"
                 onClick={onClose}
-                // CORRECCIÓN DE VISIBILIDAD: Cambiado a bg-black y hover:bg-gray-800
-                className="w-full block text-center bg-black hover:bg-gray-800 text-white py-3 rounded-lg text-lg font-bold transition-colors"
+                className="w-full block text-center bg-gris-oscuro hover:opacity-90 text-blanco-hueso py-4 rounded-sm text-sm font-bold uppercase tracking-widest transition-all"
               >
                 Iniciar Compra
               </Link>
-              <div className="text-center mt-3">
+              <div className="text-center mt-4">
                 <Link
                   to="/tienda"
                   onClick={onClose}
-                  className="text-sm font-medium text-brand-primary hover:underline"
+                  className="text-xs font-bold uppercase tracking-widest opacity-40 hover:opacity-100 transition-opacity underline underline-offset-4"
                 >
-                  Ver más productos
+                  Seguir comprando
                 </Link>
               </div>
             </div>

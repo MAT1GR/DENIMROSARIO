@@ -11,21 +11,19 @@ const placeholderPosts = [
 
 const InstagramFeed: React.FC = () => {
   return (
-    <div className="bg-white py-16 lg:py-24">
+    <div className="bg-blanco-hueso py-16 lg:py-24 border-t border-gris-oscuro/5">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight uppercase">
+        <h2 className="text-3xl lg:text-4xl font-bold tracking-tight uppercase text-gris-oscuro">
           Seguinos en Instagram
         </h2>
         <a 
           href="https://www.instagram.com/denimrosario" 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-2xl text-gray-700 mt-2 block hover:text-black font-semibold"
+          className="text-2xl text-gris-oscuro/70 mt-2 block hover:text-gris-oscuro font-semibold transition-colors"
         >
           @denimrosario
         </a>
-
-
       </div>
     </div>
   );

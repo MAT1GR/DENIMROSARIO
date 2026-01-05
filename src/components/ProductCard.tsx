@@ -33,10 +33,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <Link to={`/producto/${product.id}`} className="group block h-full">
       
       {/* CONTENEDOR TARJETA */}
-      <div className="flex flex-col h-full bg-white border border-gray-200 rounded-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-gray-300">
+      <div className="flex flex-col h-full bg-blanco-hueso border border-gris-oscuro/10 rounded-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:border-gris-oscuro/20">
         
         {/* 1. IMAGEN (Ocupa todo el ancho) */}
-        <div className="relative aspect-[3/4] w-full bg-gray-100 overflow-hidden">
+        <div className="relative aspect-[3/4] w-full bg-gris-oscuro/5 overflow-hidden">
           <img
             src={imageUrl}
             alt={`Jean ${product.name}`}
@@ -52,8 +52,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             />
           )}
           {isSoldOut && (
-             <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-[1px]">
-                <span className="bg-black text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
+             <div className="absolute inset-0 flex items-center justify-center bg-blanco-hueso/60 backdrop-blur-[1px]">
+                <span className="bg-gris-oscuro text-blanco-hueso text-[10px] font-bold px-3 py-1 uppercase tracking-widest">
                     VENDIDO
                 </span>
              </div>
@@ -64,13 +64,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className="p-2 flex flex-col flex-1 text-left justify-between">
           <div>
             {/* A. NOMBRE (Texto un poco más grande para llenar) */}
-            <h3 className="text-sm md:text-base font-black text-gray-900 uppercase tracking-tight leading-tight mb-1 line-clamp-2">
+            <h3 className="text-sm md:text-base font-black text-gris-oscuro uppercase tracking-tight leading-tight mb-1 line-clamp-2">
               {product.name}
             </h3>
             
             {/* B. PRECIO + ENVÍO */}
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1">
-              <p className="text-lg font-bold text-gray-900 leading-none">
+              <p className="text-lg font-bold text-gris-oscuro leading-none">
                 ${product.price.toLocaleString('es-AR')}
               </p>
               {!isSoldOut && (
@@ -83,8 +83,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
           {/* C. CUOTAS */}
           <div className="mt-0.5">
-            <p className="text-xs text-gray-500 font-medium">
-                3 cuotas de <span className="text-black font-bold">${installmentPrice}</span>
+            <p className="text-xs opacity-60 font-medium">
+                3 cuotas de <span className="text-gris-oscuro font-bold">${installmentPrice}</span>
             </p>
           </div>
         </div>
